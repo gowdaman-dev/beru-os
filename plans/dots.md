@@ -6,10 +6,10 @@ multi-machine sync design.
 
 ## Problem
 
-Omarchy declares `~/.config` "your files" but does little to preserve them:
+Beru declares `~/.config` "your files" but does little to preserve them:
 
-- `omarchy-refresh-config` litters `*.bak.<timestamp>` files next to originals.
-- `omarchy-reinstall-configs` clobbers everything back to `/etc/skel` defaults.
+- `beru-refresh-config` litters `*.bak.<timestamp>` files next to originals.
+- `beru-reinstall-configs` clobbers everything back to `/etc/skel` defaults.
 - Snapper only snapshots the `root` config; recovering one config file from a
   root snapshot is not a workflow, and `/home` may not be covered at all.
 - The manual punts to a YouTube video about Stow.
@@ -23,7 +23,7 @@ desktop."
 - **`git init ~/.config`**: dumping ground — Chromium profile, fcitx5 state,
   app tokens, machine churn. A `.git` there gets discovered by editors and
   prompts. Can't cover `~/.bashrc` or `~/.XCompose`.
-- **`~/.config/omarchy` only**: too narrow; misses hypr, terminals, `.bashrc`.
+- **`~/.config/beru` only**: too narrow; misses hypr, terminals, `.bashrc`.
 - **Stow**: inverted model requiring file migration; organization, not history.
 - **chezmoi / yadm**: third-party DSLs we'd be wrapping; overkill.
 - **Raw git passthrough / lazygit over `$HOME`** (rejected in review):
@@ -31,7 +31,7 @@ desktop."
   is a home-directory-eraser; `git add -A` can ingest `~/.ssh` and the object
   store into itself (`status.showUntrackedFiles no` only affects `status`);
   `remote add` + `push` silently defeats local-only. Experts can construct the
-  raw invocation themselves; Omarchy will not bless it.
+  raw invocation themselves; Beru will not bless it.
 - **Distributed git across machines**: two machines auto-committing timer and
   update snapshots into a shared branch conflict constantly. History and sync
   are different products (see Sync below).
@@ -39,37 +39,37 @@ desktop."
 ## Chosen design: bare repo over `$HOME`, driven only by constrained commands
 
 ```bash
-git init --bare ~/.local/share/omarchy/dots.git   # mode 0700
+git init --bare ~/.local/share/beru/dots.git   # mode 0700
 ```
 
 No `.git` in any directory tools walk; files stay plain files in place. All
 access goes through one internal helper that runs git **hermetically**:
 
-- Repo-local config only: synthetic identity (`Omarchy <omarchy@localhost>`),
+- Repo-local config only: synthetic identity (`Beru <omarchy@localhost>`),
   `commit.gpgsign=false`, `core.hooksPath` disabled, `--no-verify`,
   `GIT_CONFIG_GLOBAL=/dev/null` so user signing/hooks/templates/excludes and a
   `$HOME/.gitignore` can never break or intercept an automatic commit.
-- Never export `GIT_DIR`/`GIT_WORK_TREE` (would leak into `omarchy-plugin-*`,
-  `omarchy-theme-update`, `omarchy-update-dev`, user hooks).
+- Never export `GIT_DIR`/`GIT_WORK_TREE` (would leak into `beru-plugin-*`,
+  `beru-theme-update`, `beru-update-dev`, user hooks).
 - Serialized via a lock; concurrent refresh/update/manual snapshots queue.
 - **Best-effort everywhere**: a failed snapshot warns and continues. History
   is optional; updates are not. Never on the failure path of
-  `omarchy-update`/`omarchy-migrate` (`set -e` there must not see git errors).
+  `beru-update`/`beru-migrate` (`set -e` there must not see git errors).
 
 ### Audited manifest, not a derived whitelist
 
 Tracking is `git add -f --pathspec-from-file=<manifest>` only. The manifest is
-a hand-audited file shipped with Omarchy — explicitly **not** derived from
-`$OMARCHY_PATH/config` (which ships Chromium Preferences, fcitx5,
+a hand-audited file shipped with Beru — explicitly **not** derived from
+`$BERU_PATH/config` (which ships Chromium Preferences, fcitx5,
 `opencode/opencode.json` where users put API keys, etc.):
 
-- Include: `.config/hypr/*.{lua,conf}`, `.config/omarchy/shell.json`,
-  `.config/omarchy/extensions/**`, `.config/omarchy/hooks/**`,
+- Include: `.config/hypr/*.{lua,conf}`, `.config/beru/shell.json`,
+  `.config/beru/extensions/**`, `.config/beru/hooks/**`,
   terminal configs (alacritty/foot/ghostty/kitty), `.config/btop/btop.conf`,
   `.config/starship.toml`, `.bashrc`, `.XCompose`.
-- Exclude (deliberately): `.config/omarchy/plugins/**` and
-  `.config/omarchy/themes/**` (nested git clones managed by
-  `omarchy-plugin-*` / `omarchy-theme-update`), backgrounds (multi-MB
+- Exclude (deliberately): `.config/beru/plugins/**` and
+  `.config/beru/themes/**` (nested git clones managed by
+  `beru-plugin-*` / `beru-theme-update`), backgrounds (multi-MB
   binaries), `.config/btop/themes/` (symlink into `~/.local/state`), anything
   Chromium/fcitx5/opencode/xournalpp.
 - **Two tiers**: every manifest path is history-tracked, but some are marked
@@ -98,23 +98,23 @@ regular file. Therefore:
 ### Snapshot points: batch boundaries, before *and* after
 
 The unit is a labeled snapshot pair around each *batch* mutation, via an
-internal `omarchy-dots-snapshot "<label>"`:
+internal `beru-dots-snapshot "<label>"`:
 
-1. **`omarchy-provision-user`**: seed repo + initial commit, after `git.sh`
+1. **`beru-provision-user`**: seed repo + initial commit, after `git.sh`
    and `.XCompose` are in place. Idempotent; `--force` must not re-init.
-2. **`omarchy-migrate`**: before/after pair labeled with version. Covers both
-   `omarchy-update` *and* the login-time migration path, and separates
+2. **`beru-migrate`**: before/after pair labeled with version. Covers both
+   `beru-update` *and* the login-time migration path, and separates
    migration changes from prior user dirt — the "before" commit captures user
    edits, the "after" commit is purely what migrations did.
-3. **Batch refresh commands** (`omarchy-refresh-hyprland` etc.): one pair per
-   command, not one commit per `omarchy-refresh-config` call (hyprland calls
+3. **Batch refresh commands** (`beru-refresh-hyprland` etc.): one pair per
+   command, not one commit per `beru-refresh-config` call (hyprland calls
    it seven times).
-4. **`omarchy-reinstall-configs`**: a "before" snapshot — honestly labeled.
+4. **`beru-reinstall-configs`**: a "before" snapshot — honestly labeled.
    This operation replays all of `/etc/skel`; a manifest repo does **not**
    make it reversible and we don't claim it does.
 5. **Timer**: an hourly-ish systemd user timer committing only if dirty, so
    hand edits are captured — without it, "restore my bindings from last week"
-   fails for any edit not followed by an Omarchy operation.
+   fails for any edit not followed by an Beru operation.
 
 `.bak` files **stay** in v1. They serve symlink users, they're documented
 (manual, agent skill, `refresh-config-test.sh` asserts them), and git history
@@ -153,7 +153,7 @@ Remote setup UX:
   because every pull is snapshot-guarded.
 - Dormant mode (dotfile-manager users) disables sync too — they have their
   own.
-- v2 candidate: `omarchy-provision-first-run` asks "Got a dots repo?" so a
+- v2 candidate: `beru-provision-first-run` asks "Got a dots repo?" so a
   new machine is yours before first login completes. Held back from v1 —
   drags SSH/auth bootstrapping into first-run.
 
@@ -177,7 +177,7 @@ No raw git surface. No lazygit integration.
 
 ## Rollout
 
-- New users: seeded by `omarchy-provision-user`.
+- New users: seeded by `beru-provision-user`.
 - Existing users: migration inits the repo + initial commit — **skippable and
   bounded**: no-op if repo path exists, another manager is detected, or
   identity can't be synthesized; never adds beyond the manifest; never fails
@@ -195,10 +195,10 @@ No raw git surface. No lazygit integration.
 
 1. Manifest location: `default/omarchy/dots-manifest` vs alongside the
    helper; and whether users may extend it via
-   `~/.config/omarchy/dots-manifest.d/`.
-2. Whether `.config/omarchy/hooks/**` belongs in the manifest at all (small
+   `~/.config/beru/dots-manifest.d/`.
+2. Whether `.config/beru/hooks/**` belongs in the manifest at all (small
    scripts, but the likeliest place for a pasted token).
-3. Harden `omarchy-refresh-config` against `..` path escape (documented today
+3. Harden `beru-refresh-config` against `..` path escape (documented today
    in AGENTS.md) as part of this work or separately.
 4. Timer cadence (hourly vs daily) and whether the dirty-check should debounce
    against an active editing session.

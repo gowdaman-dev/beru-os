@@ -1,0 +1,6 @@
+#!/bin/bash
+
+# beru:summary=Compatibility wrapper for beru-migrate-notify.
+# beru:hidden=true
+
+exec beru-migrate-notify "$@"

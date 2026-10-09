@@ -1,0 +1,6 @@
+#!/bin/bash
+# beru:summary=Launch the clipboard manager
+# beru:group=menu
+# beru:examples=beru menu clipboard
+
+beru-shell shell toggle beru.clipboard

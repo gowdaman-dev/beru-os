@@ -12,7 +12,7 @@ trap 'rm -rf "$test_dir"' EXIT
 
 mkdir -p "$test_dir/bin"
 
-cat >"$test_dir/bin/omarchy-agent-usage-update" <<'STUB'
+cat >"$test_dir/bin/beru-agent-usage-update" <<'STUB'
 #!/bin/bash
 
 echo run >>"$USAGE_UPDATES"
@@ -23,44 +23,44 @@ chmod +x "$test_dir/bin/"*
 export USAGE_UPDATES="$test_dir/usage-updates"
 
 home="$test_dir/home"
-config="$home/.config/omarchy/shell.json"
+config="$home/.config/beru/shell.json"
 
 run_migration() {
   : >"$USAGE_UPDATES"
   HOME="$home" PATH="$test_dir/bin:$PATH" bash -euo pipefail "$migration" >/dev/null
 }
 
-mkdir -p "$home/.config/omarchy" "$home/.cache/omarchy/model-usage"
+mkdir -p "$home/.config/beru" "$home/.cache/beru/model-usage"
 cat >"$config" <<'JSON'
 {
   "bar": {
     "layout": {
-      "center": ["omarchy.model-usage"],
+      "center": ["beru.model-usage"],
       "right": [
-        { "id": "omarchy.tray" },
-        { "id": "omarchy.model-usage", "syncMode": "On", "syncDir": "~/Sync/agent-usage" }
+        { "id": "beru.tray" },
+        { "id": "beru.model-usage", "syncMode": "On", "syncDir": "~/Sync/agent-usage" }
       ]
     }
   },
-  "disabledPlugins": ["omarchy.model-usage", "omarchy.weather"]
+  "disabledPlugins": ["beru.model-usage", "beru.weather"]
 }
 JSON
 
 run_migration
 
-[[ $(jq -c '.bar.layout.right[1]' "$config") == '{"id":"omarchy.agents","syncMode":"On","syncDir":"~/Sync/agent-usage"}' ]] ||
+[[ $(jq -c '.bar.layout.right[1]' "$config") == '{"id":"beru.agents","syncMode":"On","syncDir":"~/Sync/agent-usage"}' ]] ||
   fail "migration renames the widget and keeps its settings" "$(cat "$config")"
 pass "migration renames the widget and keeps its settings"
 
-[[ $(jq -c '.bar.layout.center' "$config") == '["omarchy.agents"]' ]] ||
+[[ $(jq -c '.bar.layout.center' "$config") == '["beru.agents"]' ]] ||
   fail "migration renames string-form entries" "$(cat "$config")"
 pass "migration renames string-form entries"
 
-[[ $(jq -c '.disabledPlugins' "$config") == '["omarchy.agents","omarchy.weather"]' ]] ||
+[[ $(jq -c '.disabledPlugins' "$config") == '["beru.agents","beru.weather"]' ]] ||
   fail "migration keeps a disabled widget disabled" "$(cat "$config")"
 pass "migration keeps a disabled widget disabled"
 
-[[ ! -e $home/.cache/omarchy/model-usage ]] ||
+[[ ! -e $home/.cache/beru/model-usage ]] ||
   fail "migration drops the old scanner cache"
 pass "migration drops the old scanner cache"
 

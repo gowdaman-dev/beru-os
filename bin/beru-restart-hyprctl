@@ -1,0 +1,5 @@
+#!/bin/bash
+
+# beru:summary=Reload hyprland configuration (used by the Beru theme switching).
+
+hyprctl reload >/dev/null

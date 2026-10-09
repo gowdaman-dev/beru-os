@@ -1,0 +1,26 @@
+#!/bin/bash
+
+# beru:summary=Disable a shell plugin
+# beru:group=plugin
+# beru:args=<id>
+
+set -euo pipefail
+
+fail() {
+  echo "beru-plugin-disable: $*" >&2
+  exit 1
+}
+
+if [[ ${1:-} == "-h" || ${1:-} == "--help" ]]; then
+  echo "Usage: beru plugin disable <id>"
+  exit 0
+fi
+
+id="${1:-}"
+[[ -n $id ]] || fail "plugin id is required"
+
+result=$(beru-shell shell setPluginEnabled "$id" false)
+[[ $result == "ok" ]] ||
+  fail "plugin '$id' is not known; run: beru-shell shell rescanPlugins"
+
+echo "Disabled $id"

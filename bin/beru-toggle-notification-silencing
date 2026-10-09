@@ -1,0 +1,6 @@
+#!/bin/bash
+
+# beru:summary=Toggle notification do-not-disturb mode
+
+state=$(beru-shell notifications toggleDnd 2>/dev/null || echo "")
+beru-shell -q beru.indicators refresh

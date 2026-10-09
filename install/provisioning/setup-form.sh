@@ -1,8 +1,8 @@
-# The setup form: every question Omarchy asks a human to describe their machine
+# The setup form: every question Beru asks a human to describe their machine
 # — keyboard, account, hostname, timezone — plus the rules those answers are
 # checked against. Shared by the two places that ask them: the ISO
 # configurator's user step and this package's first-boot owner setup
-# (omarchy-provision-owner). Sourced by both, so the copies cannot drift the way
+# (beru-provision-owner). Sourced by both, so the copies cannot drift the way
 # the keyboard list already did.
 #
 # Every prompt reports one of three statuses, and both callers read them the
@@ -21,15 +21,15 @@
 # the variables these prompts write: keyboard, keyboard_label, username,
 # password, password_confirmation, full_name, email_address, hostname, timezone.
 
-OMARCHY_FORM_BACK=1
-OMARCHY_FORM_SIGNAL=130
+BERU_FORM_BACK=1
+BERU_FORM_SIGNAL=130
 
 # The English layouts lead, then everything else alphabetically. gum choose
 # paginates in --height-sized pages and jumps to the page holding --selected,
 # so an alphabetical English (US) landed deep enough to sit alone at the edge
 # of a page of layouts nobody scanning for it reads. Up here the default and
 # its variants are the first thing on screen no matter how the list grows.
-OMARCHY_KEYBOARD_LAYOUTS=$'English (US)|us
+BERU_KEYBOARD_LAYOUTS=$'English (US)|us
 English (UK)|uk
 English (US, Dvorak)|dvorak
 English (US, Colemak)|colemak
@@ -78,10 +78,10 @@ Tajik|tj_alt-UTF8
 Turkish|trq
 Ukrainian|ua'
 
-OMARCHY_USERNAME_PATTERN='^[a-z_][a-z0-9_-]*[$]?$'
-OMARCHY_RESERVED_USERNAMES='^(root|bin|daemon|mail|ftp|http|nobody|dbus|systemd-coredump|systemd-network|systemd-oom|systemd-journal-remote|systemd-resolve|systemd-timesync|tss|uuidd|alpm|git|avahi|cups|cups-browsed|lp|_talkd|polkitd|rtkit|qemu|brltty|gluster|rpc|libvirt-qemu|pcscd|nvidia-persistenced|sddm)$'
-OMARCHY_HOSTNAME_PATTERN='^[A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?$'
-OMARCHY_HOSTNAME_DEFAULT='omarchy'
+BERU_USERNAME_PATTERN='^[a-z_][a-z0-9_-]*[$]?$'
+BERU_RESERVED_USERNAMES='^(root|bin|daemon|mail|ftp|http|nobody|dbus|systemd-coredump|systemd-network|systemd-oom|systemd-journal-remote|systemd-resolve|systemd-timesync|tss|uuidd|alpm|git|avahi|cups|cups-browsed|lp|_talkd|polkitd|rtkit|qemu|brltty|gluster|rpc|libvirt-qemu|pcscd|nvidia-persistenced|sddm)$'
+BERU_HOSTNAME_PATTERN='^[A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?$'
+BERU_HOSTNAME_DEFAULT='omarchy'
 
 # Installer targets are empty, so any account is fair game; first-boot setup
 # overrides this because its machine already has users.
@@ -93,12 +93,12 @@ omarchy_username_taken() { return 1; }
 
 omarchy_prompt_keyboard() {
   local choice status
-  choice=$(printf '%s\n' "$OMARCHY_KEYBOARD_LAYOUTS" | cut -d'|' -f1 |
+  choice=$(printf '%s\n' "$BERU_KEYBOARD_LAYOUTS" | cut -d'|' -f1 |
     gum choose --height 10 --selected "English (US)" --header "Select keyboard layout") && status=0 || status=$?
   ((status == 0)) || return $status
 
   keyboard_label="$choice"
-  keyboard=$(printf '%s\n' "$OMARCHY_KEYBOARD_LAYOUTS" | awk -F'|' -v c="$choice" '$1==c{print $2; exit}')
+  keyboard=$(printf '%s\n' "$BERU_KEYBOARD_LAYOUTS" | awk -F'|' -v c="$choice" '$1==c{print $2; exit}')
 }
 
 omarchy_prompt_username() {
@@ -107,8 +107,8 @@ omarchy_prompt_username() {
     username=$(gum input --placeholder "Alphanumeric without spaces (like dhh)" --prompt.foreground="#845DF9" --prompt "Username> ") && status=0 || status=$?
     ((status == 0)) || return $status
 
-    if [[ "$username" =~ $OMARCHY_USERNAME_PATTERN ]]; then
-      if [[ "$username" =~ $OMARCHY_RESERVED_USERNAMES ]]; then
+    if [[ "$username" =~ $BERU_USERNAME_PATTERN ]]; then
+      if [[ "$username" =~ $BERU_RESERVED_USERNAMES ]]; then
         notice "Username is reserved for system" 1
       elif omarchy_username_taken "$username"; then
         notice "That username already exists on this machine" 1
@@ -156,9 +156,9 @@ omarchy_prompt_hostname() {
     ((status == 0)) || return $status
 
     if [[ -z $hostname ]]; then
-      hostname="$OMARCHY_HOSTNAME_DEFAULT"
+      hostname="$BERU_HOSTNAME_DEFAULT"
       return 0
-    elif [[ "$hostname" =~ $OMARCHY_HOSTNAME_PATTERN ]]; then
+    elif [[ "$hostname" =~ $BERU_HOSTNAME_PATTERN ]]; then
       return 0
     else
       notice "Hostname must be 1-63 letters, digits, or dashes, and cannot start or end with a dash" 1

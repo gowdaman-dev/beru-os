@@ -1,0 +1,34 @@
+#!/bin/bash
+
+# beru:summary=Enable or disable background intros
+# beru:args=<enable|disable|toggle|status>
+# beru:examples=beru theme bg intro toggle | beru theme bg intro disable
+
+set -euo pipefail
+
+toggle="$HOME/.local/state/beru/toggles/background-intros-off"
+case ${1:-} in
+  enable)
+    rm -f "$toggle"
+    beru-notification-send "Background Intros" "Enabled"
+    ;;
+  disable)
+    mkdir -p "$(dirname "$toggle")"
+    touch "$toggle"
+    beru-notification-send "Background Intros" "Disabled"
+    ;;
+  toggle)
+    if [[ -f $toggle ]]; then
+      beru-theme-bg-intro enable
+    else
+      beru-theme-bg-intro disable
+    fi
+    ;;
+  status)
+    [[ ! -f $toggle ]]
+    ;;
+  *)
+    echo "Usage: beru-theme-bg-intro <enable|disable|toggle|status>" >&2
+    exit 1
+    ;;
+esac

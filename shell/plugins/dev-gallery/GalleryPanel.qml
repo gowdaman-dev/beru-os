@@ -5,9 +5,9 @@ import qs.Ui
 import qs.Commons
 import qs.Commons as Commons
 
-// Visual reference + live playground for omarchy-shell's common UI
+// Visual reference + live playground for beru-shell's common UI
 // components. Summon with `omarchy dev ui-preview`, or directly via:
-//   omarchy-shell shell summon omarchy.dev-gallery "{}"
+//   beru-shell shell summon beru.dev-gallery "{}"
 //
 // Every section here renders the REAL component (not a copy) so the
 // gallery doubles as a smoke test. When you add a new common component,
@@ -59,7 +59,7 @@ Item {
   // User-initiated close (Esc, window close button). Tell the shell so its
   // openPanelIds map stays consistent and `toggle` works on the next call.
   function requestClose() {
-    if (shell && typeof shell.hide === "function") shell.hide("omarchy.dev-gallery")
+    if (shell && typeof shell.hide === "function") shell.hide("beru.dev-gallery")
     else window.visible = false
   }
 
@@ -277,7 +277,7 @@ Item {
 
   FloatingWindow {
     id: window
-    title: "Omarchy shell – dev gallery"
+    title: "Beru shell – dev gallery"
     color: root.background
     implicitWidth: 720
     implicitHeight: 760
@@ -285,7 +285,7 @@ Item {
 
     onVisibleChanged: {
       if (!visible && !root.closingFromHost && root.shell && typeof root.shell.hide === "function")
-        root.shell.hide("omarchy.dev-gallery")
+        root.shell.hide("beru.dev-gallery")
     }
 
     FocusScope {
@@ -355,7 +355,7 @@ Item {
             spacing: Style.space(4)
 
             Text {
-              text: "Omarchy shell · dev gallery"
+              text: "Beru shell · dev gallery"
               color: root.foreground
               font.family: root.fontFamily
               font.pixelSize: Style.font.iconLarge
@@ -1597,7 +1597,7 @@ Item {
                   width: Style.spacing.dropdownWidth
                   label: "Center anchor"
                   fontFamily: root.fontFamily
-                  options: ["omarchy.clock", "omarchy.weather", "omarchy.power"]
+                  options: ["beru.clock", "beru.weather", "beru.power"]
                   value: root.dropdownDemoValue
                   hasCursor: root.focusSection === "dropdown" && root.selectedIndex === 0
                   onHovered: function(h) {
@@ -1661,7 +1661,7 @@ Item {
                   options: [
                     { value: "Clock", label: "Clock", description: "Time + date display" },
                     { value: "Weather", label: "Weather", description: "Local conditions and forecast" },
-                    { value: "omarchy.power", label: "Power", description: "Charge level + power profile" },
+                    { value: "beru.power", label: "Power", description: "Charge level + power profile" },
                     { value: "audio", label: "Audio", description: "Output sink + volume" },
                     { value: "network", label: "Network", description: "Wi-Fi + ethernet status" },
                     { value: "bluetooth", label: "Bluetooth", description: "Paired and nearby devices" },
@@ -1669,7 +1669,7 @@ Item {
                     { value: "Media", label: "Media", description: "Now-playing + transport" },
                     { value: "Workspaces", label: "Workspaces", description: "Hyprland workspace pills" },
                     { value: "system-tray", label: "System tray", description: "StatusNotifierItem icons" },
-                    { value: "omarchy-menu", label: "Omarchy menu", description: "Launcher / system menu" },
+                    { value: "beru-menu", label: "Beru menu", description: "Launcher / system menu" },
                     { value: "power-profiles", label: "Power profiles", description: "Performance / balanced / saver" },
                     { value: "hardware", label: "Hardware", description: "CPU, GPU, mem utilization" },
                     { value: "notifications", label: "Notifications", description: "Recent notification history" }

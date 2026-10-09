@@ -34,8 +34,8 @@ hl.on("config.reloaded", function()
         xcursor = os.getenv("XCURSOR_THEME") or "default",
       }
       if omarchy_startup_cursor.size <= 0 then omarchy_startup_cursor.size = 24 end
-      hl.env("XCURSOR_PATH", os.getenv("OMARCHY_PATH") .. "/default/hypr/cursors:" .. omarchy_startup_cursor.path)
-      hl.env("XCURSOR_THEME", "omarchy-startup")
+      hl.env("XCURSOR_PATH", os.getenv("BERU_PATH") .. "/default/hypr/cursors:" .. omarchy_startup_cursor.path)
+      hl.env("XCURSOR_THEME", "beru-startup")
     end
   end
   if omarchy_startup_cursor_pending then

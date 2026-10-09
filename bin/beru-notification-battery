@@ -1,0 +1,5 @@
+#!/bin/bash
+
+# beru:summary=Show the current battery status notification
+
+beru-notification-send -g 󰁹 -u low "$(beru-battery-status)"

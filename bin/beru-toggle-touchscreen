@@ -1,0 +1,6 @@
+#!/bin/bash
+
+# beru:summary=Enable, disable, or toggle the touch functionality of the screen
+# beru:args=[on|off|toggle]
+
+exec beru-toggle-input-device touchscreen "${1:-toggle}"

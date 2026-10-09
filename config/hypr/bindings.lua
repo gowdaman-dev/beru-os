@@ -4,7 +4,7 @@
 -- See current bindings and descriptions:
 --   omarchy menu keybindings --print
 
--- To disable every Omarchy default binding, set this in
+-- To disable every Beru default binding, set this in
 -- ~/.config/hypr/hyprland.lua before require("default.hypr.omarchy"), then add
 -- only the bindings you want below:
 --   omarchy_default_bindings = false
@@ -23,6 +23,6 @@
 -- hl.unbind("SUPER + SHIFT + B")
 
 -- Logitech MX Keys examples:
--- o.bind("SUPER + SHIFT + S", nil, "omarchy-capture-screenshot")
+-- o.bind("SUPER + SHIFT + S", nil, "beru-capture-screenshot")
 -- o.bind("SUPER + H", nil, "voxtype record toggle")
--- o.bind("SUPER + PERIOD", nil, { panel = "omarchy.emojis" })
+-- o.bind("SUPER + PERIOD", nil, { panel = "beru.emojis" })

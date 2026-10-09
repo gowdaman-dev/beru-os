@@ -1,0 +1,12 @@
+[Trigger]
+Operation = Install
+Operation = Upgrade
+Type = Package
+Target = beru-settings
+Target = beru-settings-dev
+
+[Action]
+Description = Pausing Hyprland config auto-reload for Beru settings update...
+When = PreTransaction
+Depends = omarchy
+Exec = /usr/bin/beru-hyprland-reload-guard pause

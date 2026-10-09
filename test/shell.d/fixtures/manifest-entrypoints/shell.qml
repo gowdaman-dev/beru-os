@@ -4,18 +4,18 @@ import Quickshell
 ShellRoot {
   id: root
 
-  readonly property string resultPath: Quickshell.env("OMARCHY_QML_TEST_RESULT")
-  readonly property string rootPath: Quickshell.env("OMARCHY_PATH")
+  readonly property string resultPath: Quickshell.env("BERU_QML_TEST_RESULT")
+  readonly property string rootPath: Quickshell.env("BERU_PATH")
   property var failures: []
   property var createdIds: []
   property var createdObjects: []
   property var panelBarIds: [
-    "omarchy.audio",
-    "omarchy.bluetooth",
-    "omarchy.monitor",
-    "omarchy.network",
-    "omarchy.power",
-    "omarchy.weather"
+    "beru.audio",
+    "beru.bluetooth",
+    "beru.monitor",
+    "beru.network",
+    "beru.power",
+    "beru.weather"
   ]
 
   function fail(message) {
@@ -44,7 +44,7 @@ ShellRoot {
 
   function manifests() {
     try {
-      return JSON.parse(Qt.atob(Quickshell.env("OMARCHY_QML_MANIFESTS") || "W10="))
+      return JSON.parse(Qt.atob(Quickshell.env("BERU_QML_MANIFESTS") || "W10="))
     } catch (error) {
       fail("manifest list failed to parse: " + error)
       return []

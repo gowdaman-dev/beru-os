@@ -1,0 +1,20 @@
+#!/bin/bash
+
+# beru:summary=Cycle to the next media source and transfer playback when the current source is playing
+# beru:args=[next|previous]
+# beru:examples=beru audio source switch | beru-audio-source-switch previous
+
+direction="${1:-next}"
+
+case "$direction" in
+  next)
+    beru-shell media sourceSwitch
+    ;;
+  previous)
+    beru-shell media sourceSwitchPrevious
+    ;;
+  *)
+    echo "Usage: beru-audio-source-switch [next|previous]" >&2
+    exit 1
+    ;;
+esac

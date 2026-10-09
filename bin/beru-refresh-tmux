@@ -1,0 +1,6 @@
+#!/bin/bash
+
+# beru:summary=Overwrite the user tmux config with the Beru default and reload tmux.
+
+beru-refresh-config tmux/tmux.conf
+beru-restart-tmux

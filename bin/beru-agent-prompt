@@ -1,0 +1,23 @@
+#!/bin/bash
+
+# beru:summary=Launch the default coding agent with a prompt
+# beru:args=[--inline] <prompt...>
+# beru:examples=beru agent prompt "Review this project"
+
+# Prompts live here rather than on `beru agent`, where a bare prompt would
+# shadow the subcommands under that group.
+
+set -euo pipefail
+
+inline=()
+if [[ ${1:-} == "--inline" ]]; then
+  inline=(--inline)
+  shift
+fi
+
+if (($# == 0)); then
+  echo "Usage: beru agent prompt [--inline] <prompt...>" >&2
+  exit 1
+fi
+
+exec beru-agent "${inline[@]}" --prompt "$*"

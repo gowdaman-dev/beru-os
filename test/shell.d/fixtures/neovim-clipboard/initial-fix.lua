@@ -92,7 +92,7 @@ function M.setup()
   vim.opt.clipboard = "unnamedplus"
 
   vim.g.clipboard = {
-    name = "OmarchyRemoteClipboard",
+    name = "BeruRemoteClipboard",
     copy = { ["+"] = copy("+"), ["*"] = copy("*") },
     paste = { ["+"] = paste("+"), ["*"] = paste("*") },
     cache_enabled = 0,

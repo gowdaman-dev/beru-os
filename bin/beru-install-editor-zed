@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# beru:summary=Install Zed Editor and configure it with the current Beru theme
+
+echo "Installing Zed Editor..."
+beru-pkg-add zed omazed
+
+# Apply Beru theme to Zed
+omazed setup
+
+setsid uwsm-app -- gtk-launch dev.zed.Zed >/dev/null 2>&1 &

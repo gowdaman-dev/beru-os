@@ -93,19 +93,19 @@ local function command_from(value, description)
   end
 
   if value.omarchy then
-    return "omarchy-launch-" .. value.omarchy
+    return "beru-launch-" .. value.omarchy
   elseif value.menu then
-    return shell_dispatcher("menu", value.menu, "omarchy-menu toggle " .. shell_quote(value.menu))
+    return shell_dispatcher("menu", value.menu, "beru-menu toggle " .. shell_quote(value.menu))
   elseif value.panel then
-    return shell_dispatcher("panel", value.panel, "omarchy-shell shell toggle " .. shell_quote(value.panel))
+    return shell_dispatcher("panel", value.panel, "beru-shell shell toggle " .. shell_quote(value.panel))
   elseif value.audio then
-    return shell_dispatcher("audio", value.audio, "omarchy-audio-output-volume " .. shell_quote(value.audio))
+    return shell_dispatcher("audio", value.audio, "beru-audio-output-volume " .. shell_quote(value.audio))
   elseif value.brightness then
     local step = value.brightness == "raise" and "+5%" or "5%-"
-    return shell_dispatcher("brightness", value.brightness, "omarchy-brightness-display " .. step)
+    return shell_dispatcher("brightness", value.brightness, "beru-brightness-display " .. step)
   elseif value.ipc then
     local target, method = value.ipc:match("^([^.]+)%.(.+)$")
-    return shell_dispatcher("ipc", value.ipc, "omarchy-shell " .. shell_quote(target) .. " " .. shell_quote(method))
+    return shell_dispatcher("ipc", value.ipc, "beru-shell " .. shell_quote(target) .. " " .. shell_quote(method))
   elseif value.focus and value.launch then
     return o.launch_sole(value.focus, value.launch)
   elseif value.launch then
@@ -118,9 +118,9 @@ local function command_from(value, description)
     end
   elseif value.tui then
     if value.focus then
-      return "omarchy-launch-or-focus-tui " .. shell_quote(value.tui)
+      return "beru-launch-or-focus-tui " .. shell_quote(value.tui)
     else
-      return "omarchy-launch-tui " .. shell_quote(value.tui)
+      return "beru-launch-tui " .. shell_quote(value.tui)
     end
   end
 
@@ -132,7 +132,7 @@ function o.preinstalled_bindings_enabled()
     return _G.omarchy_preinstalled_bindings == true
   end
 
-  return not file_exists((os.getenv("HOME") or "") .. "/.local/state/omarchy/preinstalls-removed")
+  return not file_exists((os.getenv("HOME") or "") .. "/.local/state/beru/preinstalls-removed")
 end
 
 function o.bind(keys, description, dispatcher, options)
@@ -170,13 +170,13 @@ function o.launch_terminal()
   local function launch()
     local window = hl.get_active_window()
     if window and window.pid then
-      hl.exec_cmd("omarchy-launch-terminal --pid=" .. window.pid)
+      hl.exec_cmd("beru-launch-terminal --pid=" .. window.pid)
     else
-      hl.exec_cmd("omarchy-launch-terminal")
+      hl.exec_cmd("beru-launch-terminal")
     end
   end
 
-  o.bind_commands[launch] = "omarchy-launch-terminal"
+  o.bind_commands[launch] = "beru-launch-terminal"
   return launch
 end
 
@@ -191,19 +191,19 @@ function o.launch_on_start(command)
 end
 
 function o.launch_webapp(url)
-  return "omarchy-launch-webapp " .. shell_quote(url)
+  return "beru-launch-webapp " .. shell_quote(url)
 end
 
 function o.launch_webapp_sole(name, url)
-  return "omarchy-launch-or-focus-webapp " .. shell_quote(name) .. " " .. shell_quote(url)
+  return "beru-launch-or-focus-webapp " .. shell_quote(name) .. " " .. shell_quote(url)
 end
 
 function o.launch_sole(match, command)
-  return "omarchy-launch-or-focus " .. shell_quote(match) .. " " .. shell_quote(o.launch(command))
+  return "beru-launch-or-focus " .. shell_quote(match) .. " " .. shell_quote(o.launch(command))
 end
 
 function o.bind_toggle(keys, description, toggle, options)
-  o.bind(keys, description, "omarchy-toggle-" .. toggle, options)
+  o.bind(keys, description, "beru-toggle-" .. toggle, options)
 end
 
 -- Bind one action to a key's press and another to its release, as for
@@ -264,7 +264,7 @@ function o.bind_hold(keys, press_description, press, release_description, releas
 end
 
 function o.notify(message)
-  return "omarchy-notification-send -u low " .. shell_quote(message)
+  return "beru-notification-send -u low " .. shell_quote(message)
 end
 
 function o.window(match, rules)
@@ -281,7 +281,7 @@ function o.window(match, rules)
   hl.window_rule(rules)
 end
 
--- Opt a window in to Omarchy's standard active/inactive transparency.
+-- Opt a window in to Beru's standard active/inactive transparency.
 function o.transparent_window(match, opacity)
   o.window(match, { opacity = opacity or "0.985 0.96" })
 end

@@ -19,7 +19,7 @@ ShellRoot {
 
   QtObject {
     id: registry
-    property var installedPlugins: ({ "omarchy.background": {} })
+    property var installedPlugins: ({ "beru.background": {} })
     signal pluginsChanged()
     function resolveEnabledId(id) { return id }
     function isEnabled(id) { return false }
@@ -43,7 +43,7 @@ ShellRoot {
       cursorLog.reload()
       cursorLog.waitForJob()
       test.check(!cursorLog.text().trim(), "startup does not restore the cursor while media is loading")
-      test.services = ({ "omarchy.background": background })
+      test.services = ({ "beru.background": background })
     }
   }
   Timer {

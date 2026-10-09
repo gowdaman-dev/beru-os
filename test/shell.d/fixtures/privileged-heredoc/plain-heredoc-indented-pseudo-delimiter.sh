@@ -1,5 +1,5 @@
-cat >/etc/omarchy/agent.conf <<EOF
+cat >/etc/beru/agent.conf <<EOF
 enabled=true
   EOF
-helper=$HOME/.local/share/omarchy/bin/omarchy-agent
+helper=$HOME/.local/share/beru/bin/beru-agent
 EOF

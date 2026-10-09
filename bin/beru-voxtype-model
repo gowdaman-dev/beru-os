@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# beru:summary=Open Voxtype AI model setup
+
+set -e
+
+beru-launch-floating-terminal-with-presentation "voxtype setup model"
+beru-restart-shell

@@ -11,12 +11,12 @@ hl.on("hyprland.start", function()
   hl.exec_cmd("systemctl --user import-environment $(env | cut -d'=' -f 1)")
   hl.exec_cmd("dbus-update-activation-environment --systemd --all")
 
-  hl.exec_cmd("omarchy-launch-shell")
-  hl.exec_cmd("omarchy-provision-first-run")
-  hl.exec_cmd("omarchy-powerprofiles-init")
-  hl.exec_cmd(o.launch("omarchy-hyprland-monitor-watch"))
+  hl.exec_cmd("beru-launch-shell")
+  hl.exec_cmd("beru-provision-first-run")
+  hl.exec_cmd("beru-powerprofiles-init")
+  hl.exec_cmd(o.launch("beru-hyprland-monitor-watch"))
   hl.exec_cmd(o.launch("udiskie --automount --no-notify --no-tray"))
 
   -- Run post-boot hooks after startup config has loaded.
-  hl.exec_cmd("sleep 2 && omarchy-hook post-boot")
+  hl.exec_cmd("sleep 2 && beru-hook post-boot")
 end)

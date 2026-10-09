@@ -11,4 +11,4 @@
 
 set -euo pipefail
 
-omarchy-audio-tuning on
+beru-audio-tuning on

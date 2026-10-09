@@ -1,0 +1,32 @@
+#!/bin/bash
+
+# beru:summary=Shut down after closing application windows
+# beru:examples=beru shutdown | beru system shutdown
+# beru:aliases=beru shutdown
+
+if [[ ${1:-} == "--inhibited" ]]; then
+  # Close windows in the background so they cannot delay power-off.
+  (
+    beru-osd -i shutdown -m "Shutting down" -d 5000
+    beru-state clear re*-required
+    beru-hyprland-window-close-all
+  ) &
+
+  sleep 2 # Allow apps like Chrome to shut down correctly
+  systemctl poweroff --no-wall
+elif [[ ${1:-} == "--inhibit" ]]; then
+  # Report failures from inside the service, independently of the launching terminal.
+  # Block lid handling explicitly: it ignores high-level sleep inhibitors.
+  systemd-inhibit --what=sleep:idle:handle-lid-switch \
+    --who=Beru --why="Shutdown in progress" --mode=block \
+    "$0" --inhibited || {
+    status=$?
+    beru-notification-send -u critical "Shutdown failed" "Could not complete shutdown. Please try again."
+    exit "$status"
+  }
+else
+  # Schedule the shutdown in the user manager so closing the terminal's systemd
+  # scope cannot terminate it before it runs.
+  systemd-run --user --collect --quiet --property=Type=exec --property=RuntimeMaxSec=30s \
+    "$BERU_PATH/bin/beru-system-shutdown" --inhibit
+fi

@@ -1,5 +1,5 @@
-tmp=/tmp/omarchy-generated
+tmp=/tmp/beru-generated
 cat >"$tmp" <<EOF
-command=$HOME/.local/share/omarchy/bin/example
+command=$HOME/.local/share/beru/bin/example
 EOF
-sudo install -m644 "${tmp}" /etc/omarchy/example.conf
+sudo install -m644 "${tmp}" /etc/beru/example.conf

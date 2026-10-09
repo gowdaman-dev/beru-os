@@ -11,7 +11,7 @@ stub_bin="$test_tmp/bin"
 home_dir="$test_tmp/home"
 monitor_lua="$home_dir/.config/hypr/monitors.lua"
 eval_log="$test_tmp/hyprctl-eval.log"
-state_dir="$home_dir/.local/state/omarchy/toggles/hypr"
+state_dir="$home_dir/.local/state/beru/toggles/hypr"
 scale_state="$state_dir/internal-monitor-scale"
 
 mkdir -p "$stub_bin" "$home_dir/.config/hypr"
@@ -20,45 +20,45 @@ cat >"$stub_bin/hyprctl" <<'SH'
 #!/bin/bash
 
 if [[ $1 == "monitors" && $2 == "all" && $3 == "-j" ]]; then
-  if [[ ${OMARCHY_TEST_INTERNAL_DISABLED:-false} == "true" ]]; then
+  if [[ ${BERU_TEST_INTERNAL_DISABLED:-false} == "true" ]]; then
     printf '[{"name":"eDP-1","disabled":true,"scale":null}]'
   else
-    printf '[{"name":"eDP-1","disabled":false,"scale":%s}]' "${OMARCHY_TEST_INTERNAL_SCALE:-2}"
+    printf '[{"name":"eDP-1","disabled":false,"scale":%s}]' "${BERU_TEST_INTERNAL_SCALE:-2}"
   fi
 elif [[ $1 == "eval" ]]; then
-  printf '%s\n' "$2" >>"$OMARCHY_TEST_HYPRCTL_EVAL_LOG"
+  printf '%s\n' "$2" >>"$BERU_TEST_HYPRCTL_EVAL_LOG"
 elif [[ $1 == "reload" ]]; then
-  printf 'reload\n' >>"$OMARCHY_TEST_HYPRCTL_EVAL_LOG"
+  printf 'reload\n' >>"$BERU_TEST_HYPRCTL_EVAL_LOG"
 elif [[ $1 == "dispatch" ]]; then
-  printf 'dispatch %s\n' "$2" >>"$OMARCHY_TEST_HYPRCTL_EVAL_LOG"
+  printf 'dispatch %s\n' "$2" >>"$BERU_TEST_HYPRCTL_EVAL_LOG"
 else
   exit 1
 fi
 SH
 
-cat >"$stub_bin/omarchy-hyprland-monitor-internal" <<'SH'
+cat >"$stub_bin/beru-hyprland-monitor-internal" <<'SH'
 #!/bin/bash
 exit 0
 SH
 
-cat >"$stub_bin/omarchy-hyprland-monitor-internal-mirror" <<'SH'
+cat >"$stub_bin/beru-hyprland-monitor-internal-mirror" <<'SH'
 #!/bin/bash
 exit 0
 SH
 
-cat >"$stub_bin/omarchy-hyprland-monitor-laptop" <<'SH'
+cat >"$stub_bin/beru-hyprland-monitor-laptop" <<'SH'
 #!/bin/bash
 echo eDP-1
 SH
 
-cat >"$stub_bin/omarchy-hyprland-monitor-external-active" <<'SH'
+cat >"$stub_bin/beru-hyprland-monitor-external-active" <<'SH'
 #!/bin/bash
-[[ ${OMARCHY_TEST_EXTERNAL_ACTIVE:-false} == "true" ]]
+[[ ${BERU_TEST_EXTERNAL_ACTIVE:-false} == "true" ]]
 SH
 
-cat >"$stub_bin/omarchy-hw-clamshell" <<'SH'
+cat >"$stub_bin/beru-hw-clamshell" <<'SH'
 #!/bin/bash
-[[ ${OMARCHY_TEST_CLAMSHELL:-false} == "true" ]]
+[[ ${BERU_TEST_CLAMSHELL:-false} == "true" ]]
 SH
 
 chmod +x "$stub_bin"/*
@@ -217,12 +217,12 @@ remember_scale() {
 run_clamshell() {
   HOME="$home_dir" \
     PATH="$stub_bin:$PATH" \
-    OMARCHY_TEST_HYPRCTL_EVAL_LOG="$eval_log" \
-    OMARCHY_TEST_INTERNAL_SCALE="${OMARCHY_TEST_INTERNAL_SCALE:-2}" \
-    OMARCHY_TEST_INTERNAL_DISABLED="${OMARCHY_TEST_INTERNAL_DISABLED:-false}" \
-    OMARCHY_TEST_EXTERNAL_ACTIVE="${OMARCHY_TEST_EXTERNAL_ACTIVE:-false}" \
-    OMARCHY_TEST_CLAMSHELL="${OMARCHY_TEST_CLAMSHELL:-false}" \
-    "$ROOT/bin/omarchy-hyprland-monitor-clamshell"
+    BERU_TEST_HYPRCTL_EVAL_LOG="$eval_log" \
+    BERU_TEST_INTERNAL_SCALE="${BERU_TEST_INTERNAL_SCALE:-2}" \
+    BERU_TEST_INTERNAL_DISABLED="${BERU_TEST_INTERNAL_DISABLED:-false}" \
+    BERU_TEST_EXTERNAL_ACTIVE="${BERU_TEST_EXTERNAL_ACTIVE:-false}" \
+    BERU_TEST_CLAMSHELL="${BERU_TEST_CLAMSHELL:-false}" \
+    "$ROOT/bin/beru-hyprland-monitor-clamshell"
 }
 
 # Regression (#7265, #7301): with scale = "auto" the compositor's resolution of
@@ -231,7 +231,7 @@ run_clamshell() {
 # reload resolved auto back to the panel's own value.
 write_auto_monitor_config
 : >"$eval_log"
-OMARCHY_TEST_INTERNAL_SCALE=3 run_clamshell
+BERU_TEST_INTERNAL_SCALE=3 run_clamshell
 ! grep -F 'scale = ' "$eval_log" >/dev/null || fail "clamshell recovery leaves an auto-scaled panel alone"
 [[ ! -f $scale_state ]] || fail "clamshell recovery does not remember transient scale"
 pass "clamshell recovery leaves an auto-scaled panel alone"
@@ -240,7 +240,7 @@ pass "clamshell recovery leaves an auto-scaled panel alone"
 # the panel via the catch-all rule's bare-word reference to the local.
 write_default_auto_config
 : >"$eval_log"
-OMARCHY_TEST_INTERNAL_SCALE=3 run_clamshell
+BERU_TEST_INTERNAL_SCALE=3 run_clamshell
 ! grep -F 'scale = ' "$eval_log" >/dev/null || fail "clamshell recovery leaves the shipped auto default alone"
 pass "clamshell recovery leaves the shipped auto default alone"
 
@@ -248,25 +248,25 @@ pass "clamshell recovery leaves the shipped auto default alone"
 # reapplied, and a drifted one is corrected back to the configured value.
 write_internal_monitor_config
 : >"$eval_log"
-OMARCHY_TEST_INTERNAL_SCALE=1.25 run_clamshell
+BERU_TEST_INTERNAL_SCALE=1.25 run_clamshell
 ! grep -F 'scale = ' "$eval_log" >/dev/null || fail "clamshell recovery does not reapply matching scale"
 pass "clamshell recovery avoids redundant scale apply"
 
 write_internal_monitor_config
 : >"$eval_log"
-OMARCHY_TEST_INTERNAL_SCALE=3 run_clamshell
+BERU_TEST_INTERNAL_SCALE=3 run_clamshell
 grep -F 'scale = 1.25' "$eval_log" >/dev/null || fail "clamshell recovery corrects a drifted numeric scale"
 pass "clamshell recovery corrects a drifted numeric scale"
 
 write_auto_monitor_config
 : >"$eval_log"
-OMARCHY_TEST_INTERNAL_SCALE=1.6 OMARCHY_TEST_EXTERNAL_ACTIVE=true OMARCHY_TEST_CLAMSHELL=true run_clamshell
+BERU_TEST_INTERNAL_SCALE=1.6 BERU_TEST_EXTERNAL_ACTIVE=true BERU_TEST_CLAMSHELL=true run_clamshell
 [[ -f $scale_state ]] || fail "clamshell disable remembers internal scale"
 [[ $(<"$scale_state") == "1.6" ]] || fail "clamshell disable remembers internal scale value"
 pass "clamshell disable remembers internal scale"
 
 : >"$eval_log"
-OMARCHY_TEST_INTERNAL_DISABLED=true run_clamshell
+BERU_TEST_INTERNAL_DISABLED=true run_clamshell
 grep -F 'scale = 1.6' "$eval_log" >/dev/null || fail "clamshell recovery uses remembered internal scale"
 ! grep -F 'scale = "auto"' "$eval_log" >/dev/null || fail "clamshell recovery avoids auto after disabled internal display"
 pass "clamshell recovery uses remembered internal scale"
@@ -276,13 +276,13 @@ pass "clamshell recovery uses remembered internal scale"
 write_auto_monitor_config
 rm -f "$scale_state"
 : >"$eval_log"
-OMARCHY_TEST_INTERNAL_DISABLED=true run_clamshell
+BERU_TEST_INTERNAL_DISABLED=true run_clamshell
 grep -F 'scale = 2' "$eval_log" >/dev/null || fail "clamshell recovery falls back to the default scale"
 pass "clamshell recovery falls back to the default scale"
 
 write_internal_monitor_config
 : >"$eval_log"
-OMARCHY_TEST_INTERNAL_DISABLED=true run_clamshell
+BERU_TEST_INTERNAL_DISABLED=true run_clamshell
 grep -F 'position = "0x0"' "$eval_log" >/dev/null || fail "clamshell recovery uses configured internal position"
 grep -F 'scale = 1.25' "$eval_log" >/dev/null || fail "clamshell recovery uses configured internal scale"
 pass "clamshell recovery uses configured internal monitor rule"
@@ -292,7 +292,7 @@ pass "clamshell recovery uses configured internal monitor rule"
 write_internal_monitor_var_config
 rm -f "$scale_state"
 : >"$eval_log"
-OMARCHY_TEST_INTERNAL_DISABLED=true run_clamshell
+BERU_TEST_INTERNAL_DISABLED=true run_clamshell
 grep -F 'scale = 1.5' "$eval_log" >/dev/null || fail "clamshell recovery resolves omarchy_monitor_scale variable reference"
 pass "clamshell recovery resolves omarchy_monitor_scale variable reference"
 
@@ -301,7 +301,7 @@ pass "clamshell recovery resolves omarchy_monitor_scale variable reference"
 write_internal_monitor_auto_config
 remember_scale 1.75
 : >"$eval_log"
-OMARCHY_TEST_INTERNAL_DISABLED=true run_clamshell
+BERU_TEST_INTERNAL_DISABLED=true run_clamshell
 grep -F 'scale = 1.75' "$eval_log" >/dev/null || fail "clamshell recovery keeps auto scale off the omarchy_monitor_scale local"
 pass "clamshell recovery keeps auto scale off the omarchy_monitor_scale local"
 
@@ -309,28 +309,28 @@ pass "clamshell recovery keeps auto scale off the omarchy_monitor_scale local"
 write_internal_monitor_unresolvable_config
 remember_scale 1.75
 : >"$eval_log"
-OMARCHY_TEST_INTERNAL_DISABLED=true run_clamshell
+BERU_TEST_INTERNAL_DISABLED=true run_clamshell
 grep -F 'scale = 1.75' "$eval_log" >/dev/null || fail "clamshell recovery ignores the catch-all rule when the internal panel has its own"
 pass "clamshell recovery ignores the catch-all rule when the internal panel has its own"
 
 write_catch_all_var_config
 rm -f "$scale_state"
 : >"$eval_log"
-OMARCHY_TEST_INTERNAL_DISABLED=true run_clamshell
+BERU_TEST_INTERNAL_DISABLED=true run_clamshell
 grep -F 'scale = 1.5' "$eval_log" >/dev/null || fail "clamshell recovery resolves a quoted scale through the catch-all rule"
 pass "clamshell recovery resolves a quoted scale through the catch-all rule"
 
 write_commented_catch_all_var_config
 rm -f "$scale_state"
 : >"$eval_log"
-OMARCHY_TEST_INTERNAL_DISABLED=true run_clamshell
+BERU_TEST_INTERNAL_DISABLED=true run_clamshell
 grep -F 'scale = 1.25' "$eval_log" >/dev/null || fail "clamshell recovery ignores a trailing comment on the scale local"
 pass "clamshell recovery ignores a trailing comment on the scale local"
 
 write_internal_monitor_position_var_config
 rm -f "$scale_state"
 : >"$eval_log"
-OMARCHY_TEST_INTERNAL_DISABLED=true run_clamshell
+BERU_TEST_INTERNAL_DISABLED=true run_clamshell
 grep -F 'position = "0x0"' "$eval_log" >/dev/null || fail "clamshell recovery resolves a position variable reference"
 pass "clamshell recovery resolves a position variable reference"
 
@@ -339,7 +339,7 @@ pass "clamshell recovery resolves a position variable reference"
 write_internal_monitor_scaleless_config
 remember_scale 1.75
 : >"$eval_log"
-OMARCHY_TEST_INTERNAL_DISABLED=true run_clamshell
+BERU_TEST_INTERNAL_DISABLED=true run_clamshell
 grep -F 'scale = 1' "$eval_log" >/dev/null || fail "clamshell recovery takes the catch-all scale when the internal rule omits one"
 ! grep -F 'scale = 1.75' "$eval_log" >/dev/null || fail "clamshell recovery prefers the catch-all scale over the remembered one"
 pass "clamshell recovery takes the catch-all scale when the internal rule omits one"
@@ -348,7 +348,7 @@ pass "clamshell recovery takes the catch-all scale when the internal rule omits 
 write_expression_scale_config
 remember_scale 1.75
 : >"$eval_log"
-OMARCHY_TEST_INTERNAL_DISABLED=true run_clamshell
+BERU_TEST_INTERNAL_DISABLED=true run_clamshell
 grep -F 'scale = 1.75' "$eval_log" >/dev/null || fail "clamshell recovery leaves an expression scale unresolved"
 pass "clamshell recovery leaves an expression scale unresolved"
 
@@ -357,7 +357,7 @@ pass "clamshell recovery leaves an expression scale unresolved"
 write_expression_scale_config
 remember_scale 1.75
 : >"$eval_log"
-OMARCHY_TEST_INTERNAL_SCALE=3 run_clamshell
+BERU_TEST_INTERNAL_SCALE=3 run_clamshell
 ! grep -F 'scale = ' "$eval_log" >/dev/null || fail "clamshell recovery leaves an expression-scaled panel alone"
 pass "clamshell recovery leaves an expression-scaled panel alone"
 
@@ -365,7 +365,7 @@ pass "clamshell recovery leaves an expression-scaled panel alone"
 write_shadowed_auto_config
 remember_scale 1.75
 : >"$eval_log"
-OMARCHY_TEST_INTERNAL_DISABLED=true run_clamshell
+BERU_TEST_INTERNAL_DISABLED=true run_clamshell
 grep -F 'scale = 1.75' "$eval_log" >/dev/null || fail "clamshell recovery does not resolve a quoted scale against a local"
 pass "clamshell recovery does not resolve a quoted scale against a local"
 
@@ -374,7 +374,7 @@ pass "clamshell recovery does not resolve a quoted scale against a local"
 write_shadowed_auto_config
 remember_scale 1.75
 : >"$eval_log"
-OMARCHY_TEST_INTERNAL_SCALE=3 run_clamshell
+BERU_TEST_INTERNAL_SCALE=3 run_clamshell
 ! grep -F 'scale = ' "$eval_log" >/dev/null || fail "clamshell recovery leaves an explicitly auto panel alone"
 pass "clamshell recovery leaves an explicitly auto panel alone"
 
@@ -382,7 +382,7 @@ pass "clamshell recovery leaves an explicitly auto panel alone"
 write_expression_rule_config
 remember_scale 1.75
 : >"$eval_log"
-OMARCHY_TEST_INTERNAL_DISABLED=true run_clamshell
+BERU_TEST_INTERNAL_DISABLED=true run_clamshell
 grep -F 'scale = 1.75' "$eval_log" >/dev/null || fail "clamshell recovery leaves an expression scale in a rule unresolved"
 pass "clamshell recovery leaves an expression scale in a rule unresolved"
 
@@ -390,7 +390,7 @@ pass "clamshell recovery leaves an expression scale in a rule unresolved"
 write_commented_rule_config
 remember_scale 1.75
 : >"$eval_log"
-OMARCHY_TEST_INTERNAL_DISABLED=true run_clamshell
+BERU_TEST_INTERNAL_DISABLED=true run_clamshell
 grep -F 'scale = 1.5' "$eval_log" >/dev/null || fail "clamshell recovery does not read a rule out of a trailing comment"
 pass "clamshell recovery does not read a rule out of a trailing comment"
 
@@ -398,7 +398,7 @@ pass "clamshell recovery does not read a rule out of a trailing comment"
 write_commented_internal_rule_config
 remember_scale 1.75
 : >"$eval_log"
-OMARCHY_TEST_INTERNAL_DISABLED=true run_clamshell
+BERU_TEST_INTERNAL_DISABLED=true run_clamshell
 grep -F 'scale = 1.25' "$eval_log" >/dev/null || fail "clamshell recovery does not read a scale out of a trailing comment"
 pass "clamshell recovery does not read a scale out of a trailing comment"
 
@@ -406,7 +406,7 @@ for config in nested_table semicolon block_comment; do
   "write_${config}_config"
   remember_scale 1.75
   : >"$eval_log"
-  OMARCHY_TEST_INTERNAL_DISABLED=true run_clamshell
+  BERU_TEST_INTERNAL_DISABLED=true run_clamshell
   grep -F 'position = "0x0"' "$eval_log" >/dev/null || fail "clamshell recovery reads the position out of a ${config//_/ } rule"
   grep -F 'scale = 1.25' "$eval_log" >/dev/null || fail "clamshell recovery reads the scale out of a ${config//_/ } rule"
   pass "clamshell recovery reads a ${config//_/ } rule"

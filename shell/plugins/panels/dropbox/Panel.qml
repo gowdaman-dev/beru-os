@@ -10,11 +10,11 @@ import "Model.js" as Model
 
 Panel {
   id: root
-  moduleName: "omarchy.dropbox"
-  ipcTarget: "omarchy.dropbox"
+  moduleName: "beru.dropbox"
+  ipcTarget: "beru.dropbox"
   manageIpc: false
 
-  property string omarchyPath: Quickshell.env("OMARCHY_PATH")
+  property string omarchyPath: Quickshell.env("BERU_PATH")
   property string focusSection: "login"
   property int fileIndex: 0
   property bool cursorActive: false

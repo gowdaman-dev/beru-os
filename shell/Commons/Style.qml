@@ -265,7 +265,7 @@ QtObject {
   // ---------------------------------------------------------- typography
   //
   // `fontFamily` defaults to "monospace" so the bar and every qs.Ui
-  // component follows the fontconfig alias `omarchy-font-set` writes.
+  // component follows the fontconfig alias `beru-font-set` writes.
   // Themes can override per-token via [font] in shell.toml, but the
   // family stays system-wide.
   property string fontFamily: "monospace"
@@ -312,11 +312,11 @@ QtObject {
   }
 
   // The menu, polkit, emojis, and clipboard surfaces honor an
-  // OMARCHY_MENU_FONT override for users who want a different family on the
+  // BERU_MENU_FONT override for users who want a different family on the
   // summoned popups than on the bar. Resolved once at startup; an empty env
   // value falls back to the shared fontconfig alias.
   readonly property string menuFontFamily: {
-    var override = Quickshell.env("OMARCHY_MENU_FONT")
+    var override = Quickshell.env("BERU_MENU_FONT")
     return (override && override.length > 0) ? override : fontFamily
   }
 
@@ -536,7 +536,7 @@ QtObject {
   // reloads its config when sourced files change, then hyprctl reflects
   // the new effective value.
   property FileView windowNoGapsToggle: FileView {
-    path: Quickshell.env("HOME") + "/.local/state/omarchy/toggles/hypr/window-no-gaps.lua"
+    path: Quickshell.env("HOME") + "/.local/state/beru/toggles/hypr/window-no-gaps.lua"
     watchChanges: true
     printErrors: false
     onFileChanged: refreshTimer.restart()

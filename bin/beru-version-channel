@@ -1,0 +1,29 @@
+#!/bin/bash
+
+# beru:summary=Print the active Beru mirror and package channel
+
+if grep -q "https://stable-mirror.beru.org/" /etc/pacman.d/mirrorlist; then
+  mirror="stable"
+elif grep -q "https://rc-mirror.beru.org/" /etc/pacman.d/mirrorlist; then
+  mirror="rc"
+elif grep -q "https://mirror.beru.org/" /etc/pacman.d/mirrorlist; then
+  mirror="edge"
+else
+  mirror="unknown"
+fi
+
+if grep -q "https://pkgs.beru.org/stable/" /etc/pacman.conf; then
+  pkgs="stable"
+elif grep -q "https://pkgs.beru.org/rc/" /etc/pacman.conf; then
+  pkgs="rc"
+elif grep -q "https://pkgs.beru.org/edge/" /etc/pacman.conf; then
+  pkgs="edge"
+else
+  pkgs="unknown"
+fi
+
+if [[ $mirror == $pkgs ]]; then
+  echo $mirror
+else
+  echo "$mirror / $pkgs"
+fi

@@ -1,7 +1,7 @@
-# The Omarchy CLI router
+# The Beru CLI router
 
 `bin/omarchy` maps spaced commands onto the flat `bin/omarchy-*` namespace:
-`omarchy theme set foo` becomes `exec bin/omarchy-theme-set foo`. There is no
+`omarchy theme set foo` becomes `exec bin/beru-theme-set foo`. There is no
 registry to maintain — every executable `bin/omarchy-*` file is a command, and
 its filename is its default route. Metadata comments in the file header refine
 how it presents and routes; the keys are documented in
@@ -11,19 +11,18 @@ actually work.
 
 ## How a binary becomes routes
 
-The stem after `omarchy-` splits at the first hyphen: `omarchy-theme-set` gets
+The stem after `omarchy-` splits at the first hyphen: `beru-theme-set` gets
 group `theme` and name `set`, with remaining hyphens becoming spaces
-(`omarchy-hw-asus-rog` → group `hw`, name `asus rog`). A single-segment stem
-(`omarchy-update`) is the root command of its own group, with an empty name.
+(`beru-hw-asus-rog` → group `hw`, name `asus rog`). A single-segment stem
+(`beru-update`) is the root command of its own group, with an empty name.
 
 Every command registers two routes: the canonical route `omarchy <group>
 <name>` after metadata overrides, and the filename route with *all* hyphens
 turned to spaces. When metadata moves nothing, they are the same route. When it
-does, both keep working — `# omarchy:name=gaming xbox-cloud` on
-`omarchy-install-gaming-xbox-cloud` keeps the hyphen inside the name, so
+does, both keep working — `# beru:name=gaming xbox-cloud` on
+`beru-install-gaming-xbox-cloud` keeps the hyphen inside the name, so
 `omarchy install gaming xbox-cloud` is canonical while the filename route
-`omarchy install gaming xbox cloud` still resolves. An explicitly *empty* `#
-omarchy:name=` makes a command the root of its group: `omarchy-menu-share` sets
+`omarchy install gaming xbox cloud` still resolves. An explicitly *empty* `# beru:name=` makes a command the root of its group: `beru-menu-share` sets
 `group=share` and an empty name, so its canonical route is `omarchy share`
 while `omarchy menu share` remains as the filename route. Alias routes register
 the same way but are flagged, so listings show them as aliases rather than
@@ -31,7 +30,7 @@ commands.
 
 Two routes claiming different binaries is a collision: the first registration
 wins, dispatch is unaffected, and the conflict is recorded for `omarchy
-commands --check` to report. Hidden commands (`# omarchy:hidden=true`) still
+commands --check` to report. Hidden commands (`# beru:hidden=true`) still
 register and dispatch normally — hiding only removes them from listings, which
 is how install-time plumbing like `omarchy apply hardware` stays callable
 without being browsable.
@@ -51,8 +50,8 @@ route, then drops trailing words until something matches. Whatever it drops is
 passed to the binary as arguments. This runs in two passes.
 
 The fast path joins argument prefixes with hyphens and checks for an
-executable file: `omarchy theme set foo` probes `omarchy-theme-set-foo`, then
-`omarchy-theme-set`, which exists — resolved without reading a single metadata
+executable file: `omarchy theme set foo` probes `beru-theme-set-foo`, then
+`beru-theme-set`, which exists — resolved without reading a single metadata
 header. This exists because plain dispatch is the hot path: parsing the
 headers of several hundred binaries on every invocation is measurable
 latency (`omarchy dev benchmark cli` tracks it), and a filename probe is a few
@@ -93,7 +92,7 @@ word) and a pointer to `omarchy commands --all`.
 Group help is synthesized from metadata, not written anywhere. A command
 belongs to a group when either its metadata group or its filename group
 matches, listed under the route that fits the group being viewed: `omarchy
-menu --help` shows `omarchy-menu-share` as `omarchy menu share`, while its
+menu --help` shows `beru-menu-share` as `omarchy menu share`, while its
 canonical `omarchy share` stands alone. On the fast path, group help loads
 only that group's filename-prefixed binaries rather than everything.
 
@@ -119,7 +118,7 @@ that resolves to the binary). Per-command JSON comes from `omarchy <route>
 on:
 
 - route collisions between binaries
-- a missing explicit `# omarchy:summary=` — a plain-comment fallback renders
+- a missing explicit `# beru:summary=` — a plain-comment fallback renders
   in help but does not satisfy the check
 - invalid boolean metadata: `hidden` and `requires-sudo` must be `true` or
   omitted, never `false`

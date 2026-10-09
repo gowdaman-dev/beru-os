@@ -12,15 +12,15 @@ import "ImagePickerModel.js" as ImagePickerModel
 Item {
   id: root
 
-  // Injected by omarchy-shell; defaults to the session OMARCHY_PATH.
-  property string omarchyPath: Quickshell.env("OMARCHY_PATH")
+  // Injected by beru-shell; defaults to the session BERU_PATH.
+  property string omarchyPath: Quickshell.env("BERU_PATH")
   property string stateHome: Quickshell.env("HOME") + "/.local/state"
-  property string userThemesPath: Quickshell.env("HOME") + "/.config/omarchy/themes"
-  property string imageDirs: Quickshell.env("OMARCHY_IMAGE_SELECTOR_DIRS") || Quickshell.env("OMARCHY_IMAGE_SELECTOR_DIR") || Quickshell.env("OMARCHY_STOCK_BACKGROUNDS_DIR") || (stateHome + "/omarchy/current/theme/backgrounds")
+  property string userThemesPath: Quickshell.env("HOME") + "/.config/beru/themes"
+  property string imageDirs: Quickshell.env("BERU_IMAGE_SELECTOR_DIRS") || Quickshell.env("BERU_IMAGE_SELECTOR_DIR") || Quickshell.env("BERU_STOCK_BACKGROUNDS_DIR") || (stateHome + "/omarchy/current/theme/backgrounds")
   property string imageRows: ""
   property string loadedImageRows: ""
-  property string selectionFile: Quickshell.env("OMARCHY_IMAGE_SELECTOR_SELECTION_FILE") || Quickshell.env("OMARCHY_BACKGROUND_SELECTION_FILE")
-  property string selectedImage: Quickshell.env("OMARCHY_IMAGE_SELECTOR_SELECTED")
+  property string selectionFile: Quickshell.env("BERU_IMAGE_SELECTOR_SELECTION_FILE") || Quickshell.env("BERU_BACKGROUND_SELECTION_FILE")
+  property string selectedImage: Quickshell.env("BERU_IMAGE_SELECTOR_SELECTED")
   property int selectedIndex: 0
   property bool imagesLoaded: false
   property bool opened: false
@@ -36,7 +36,7 @@ Item {
   property string filterText: ""
   property var doneFilesToRelease: []
   // Themes open from rows the shell already holds, so the picker shows without
-  // waiting on omarchy-theme-switcher; each open refreshes them behind it.
+  // waiting on beru-theme-switcher; each open refreshes them behind it.
   property string themeRows: ""
   property bool themeMode: false
   property bool themeOpenPending: false
@@ -193,7 +193,7 @@ Item {
     if (themeMode) {
       themeMode = false
       root.opened = false
-      if (path) Util.execArgv(["omarchy-theme-set", nameForPath(path)])
+      if (path) Util.execArgv(["beru-theme-set", nameForPath(path)])
       return
     }
 
@@ -326,7 +326,7 @@ Item {
     onTriggered: {
       if (root.opened && root.themeMode && !introPrepare.running) {
         introPrepare.theme = root.nameForPath(root.currentPath())
-        introPrepare.command = ["omarchy-theme-bg-boot-intro", "--prepare-theme", root.nameForPath(root.currentPath())]
+        introPrepare.command = ["beru-theme-bg-boot-intro", "--prepare-theme", root.nameForPath(root.currentPath())]
         introPrepare.running = true
       }
     }
@@ -414,7 +414,7 @@ Item {
     pendingDeleteTheme = ""
   }
 
-  // Removal itself is omarchy-theme-remove's job (including its guards and
+  // Removal itself is beru-theme-remove's job (including its guards and
   // notification); the picker only refreshes its rows once it finishes.
   function confirmDeleteTheme() {
     var name = pendingDeleteTheme
@@ -423,7 +423,7 @@ Item {
     if (!name || deleteThemeProc.running) return
     // Keep the user's place in the list once the deleted theme is gone.
     if (name === selectedThemeName()) deleteSelectionPath = ImagePickerModel.replacementSelectionPath(imageArray, selectedIndex, filterText)
-    deleteThemeProc.command = ["omarchy-theme-remove", name]
+    deleteThemeProc.command = ["beru-theme-remove", name]
     deleteThemeProc.running = true
   }
 
@@ -456,7 +456,7 @@ Item {
   Process {
     id: themeRowsProc
     property bool queued: false
-    command: [root.omarchyPath + "/bin/omarchy-theme-switcher", "--print-rows"]
+    command: [root.omarchyPath + "/bin/beru-theme-switcher", "--print-rows"]
     stdout: StdioCollector {
       onStreamFinished: root.updateThemeRows(String(text || "").trim())
     }
@@ -468,7 +468,7 @@ Item {
     }
   }
 
-  // The same listing omarchy-theme-remove offers interactively: real
+  // The same listing beru-theme-remove offers interactively: real
   // directories under the user themes path, never symlinked working copies.
   Process {
     id: extraThemesProc
@@ -557,7 +557,7 @@ Item {
     }
   }
 
-  // Lifecycle hooks invoked by omarchy-shell summon/hide. shell.summon(id,
+  // Lifecycle hooks invoked by beru-shell summon/hide. shell.summon(id,
   // payloadJson) hands the JSON to open() here; shell.hide(id) calls close().
   // The shell host owns the stable `image-selector` IPC target and forwards
   // those lower-level positional calls here.
@@ -624,7 +624,7 @@ Item {
     id: panel
     shown: root.opened
     shownKeyboardFocus: root.imagesLoaded ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
-    WlrLayershell.namespace: "omarchy-image-selector"
+    WlrLayershell.namespace: "beru-image-selector"
 
     MouseArea {
       anchors.fill: parent

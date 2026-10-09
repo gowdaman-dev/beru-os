@@ -1,0 +1,12 @@
+[Trigger]
+Operation = Install
+Operation = Upgrade
+Type = Package
+Target = beru-settings
+Target = beru-settings-dev
+
+[Action]
+Description = Reloading Hyprland after Beru settings update...
+When = PostTransaction
+Depends = omarchy
+Exec = /usr/bin/beru-hyprland-reload-guard resume

@@ -1,0 +1,28 @@
+#!/bin/bash
+
+# beru:summary=Edit, set, or reset About branding
+# beru:group=branding
+# beru:name=about
+# beru:args=<image|text|reset>
+# beru:examples=beru branding about image | beru branding about text | beru branding about reset
+
+set -euo pipefail
+
+case "${1:-}" in
+image)
+  image=$(beru-file-select --title "Pick PNG or SVG for About" --extensions "png svg")
+  if beru-transcode-ascii "$image" ~/.config/beru/branding/about.txt --width 54 --height 26; then
+    beru-launch-about >/dev/null 2>&1
+  fi
+  ;;
+text)
+  beru-launch-editor ~/.config/beru/branding/about.txt >/dev/null 2>&1 && beru-launch-about >/dev/null 2>&1
+  ;;
+reset)
+  cp "$BERU_PATH/icon.txt" ~/.config/beru/branding/about.txt && beru-launch-about >/dev/null 2>&1
+  ;;
+*)
+  echo "Usage: beru-branding-about <image|text|reset>" >&2
+  exit 1
+  ;;
+esac

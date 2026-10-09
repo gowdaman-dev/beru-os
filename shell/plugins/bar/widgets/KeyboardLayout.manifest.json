@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "id": "omarchy.keyboard-layout",
+  "id": "beru.keyboard-layout",
   "name": "Keyboard layout",
   "version": "1.0.0",
-  "author": "Omarchy",
+  "author": "Beru",
   "description": "Current xkb layout, click cycles",
   "kinds": [
     "bar-widget"

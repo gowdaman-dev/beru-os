@@ -1,5 +1,5 @@
 mask=$((1 << bits))
 
-cat >/etc/omarchy/agent.conf <<EOF
-helper=$HOME/.local/share/omarchy/bin/omarchy-agent
+cat >/etc/beru/agent.conf <<EOF
+helper=$HOME/.local/share/beru/bin/beru-agent
 EOF

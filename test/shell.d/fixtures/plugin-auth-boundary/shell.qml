@@ -22,14 +22,14 @@ ShellRoot {
 
   FileView {
     id: resultFile
-    path: Quickshell.env("OMARCHY_QML_TEST_RESULT")
+    path: Quickshell.env("BERU_QML_TEST_RESULT")
     atomicWrites: true
   }
 
   Component.onCompleted: {
     var caller = "example.safe"
-    authStoreOwner.retain("omarchy.lock", root.ownService)
-    authStoreOwner.updateManifest("omarchy.lock", { version: "kept" })
+    authStoreOwner.retain("beru.lock", root.ownService)
+    authStoreOwner.updateManifest("beru.lock", { version: "kept" })
     var api = apiComponent.createObject(null, {
       pluginId: caller,
       idleConfig: { screensaver: 60, lock: 120 },
@@ -63,24 +63,24 @@ ShellRoot {
     var result = {
       detached: api.parent === undefined || api.parent === null,
       ownService: own && own.marker === "own",
-      foreignService: api.serviceFor("omarchy.lock") === null,
-      firstPartyService: api.firstPartyServiceFor("omarchy.polkit") === null,
+      foreignService: api.serviceFor("beru.lock") === null,
+      firstPartyService: api.firstPartyServiceFor("beru.polkit") === null,
       ownSummon: api.summon(caller, "{}") === true,
-      foreignSummon: api.summon("omarchy.lock", "{}") === false,
+      foreignSummon: api.summon("beru.lock", "{}") === false,
       ownHide: api.hide(caller) === true,
-      foreignHide: api.hide("omarchy.lock") === false,
+      foreignHide: api.hide("beru.lock") === false,
       ownToggle: api.toggle(caller, "{}") === true,
-      foreignToggle: api.toggle("omarchy.lock", "{}") === false,
+      foreignToggle: api.toggle("beru.lock", "{}") === false,
       ownOpen: api.isPluginOpen(caller) === true,
-      foreignOpen: api.isPluginOpen("omarchy.lock") === false,
+      foreignOpen: api.isPluginOpen("beru.lock") === false,
       ownSettings: api.updateEntryInline(caller, {}) === true,
-      foreignSettings: api.updateEntryInline("omarchy.lock", {}) === false,
+      foreignSettings: api.updateEntryInline("beru.lock", {}) === false,
       detachedIdleConfig: api.idleConfig.screensaver === 60 && api.idleConfig.lock === 120,
-      authStoreOwnerRetains: authStoreOwner.has("omarchy.lock") === true,
-      authStoreOwnerRemembersTrust: authStoreOwner.isTrusted("omarchy.lock") === true,
+      authStoreOwnerRetains: authStoreOwner.has("beru.lock") === true,
+      authStoreOwnerRemembersTrust: authStoreOwner.isTrusted("beru.lock") === true,
       authStoreOwnerUpdatesManifest: root.ownService.manifest
         && root.ownService.manifest.version === "kept",
-      authStoreImportIsolated: authStoreReader.has("omarchy.lock") === false,
+      authStoreImportIsolated: authStoreReader.has("beru.lock") === false,
       noGenericPluginShellFactory: typeof api.pluginShellForId !== "function",
       calls: root.calls
     }

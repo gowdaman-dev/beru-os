@@ -1,0 +1,5 @@
+#!/bin/bash
+
+# beru:summary=Reload btop configuration (used by the Beru theme switching).
+
+pkill -SIGUSR2 btop

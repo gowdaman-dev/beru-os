@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# beru:summary=Open the Beru Discord community in the Discord app or a browser.
+
+invite="https://discord.gg/tXFUdasqhY"
+
+if beru-cmd-present discord; then
+  exec setsid uwsm-app -- discord --url -- "discord://-/invite/${invite##*/}"
+else
+  exec beru-launch-webapp "$invite"
+fi

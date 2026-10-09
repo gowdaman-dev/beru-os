@@ -1,0 +1,28 @@
+#!/bin/bash
+
+# beru:summary=Edit, set, or reset screensaver branding
+# beru:group=branding
+# beru:name=screensaver
+# beru:args=<image|text|reset>
+# beru:examples=beru branding screensaver image | beru branding screensaver text | beru branding screensaver reset
+
+set -euo pipefail
+
+case "${1:-}" in
+image)
+  image=$(beru-file-select --title "Pick PNG or SVG for screensaver" --extensions "png svg")
+  if beru-transcode-ascii "$image" ~/.config/beru/branding/screensaver.txt; then
+    beru-launch-screensaver force >/dev/null 2>&1
+  fi
+  ;;
+text)
+  beru-launch-editor ~/.config/beru/branding/screensaver.txt >/dev/null 2>&1 && beru-launch-screensaver force >/dev/null 2>&1
+  ;;
+reset)
+  cp "$BERU_PATH/logo.txt" ~/.config/beru/branding/screensaver.txt && beru-launch-screensaver force >/dev/null 2>&1
+  ;;
+*)
+  echo "Usage: beru-branding-screensaver <image|text|reset>" >&2
+  exit 1
+  ;;
+esac

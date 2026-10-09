@@ -10,7 +10,7 @@ import "TrayModel.js" as TrayModel
 
 BarWidget {
   id: root
-  moduleName: "omarchy.tray"
+  moduleName: "beru.tray"
 
   property bool expanded: false
   property bool managePopupOpen: false
@@ -160,9 +160,9 @@ BarWidget {
     return "drawer"
   }
 
-  function ownedByOmarchy(item) {
+  function ownedByBeru(item) {
     var layout = root.bar && root.bar.layoutConfig ? root.bar.layoutConfig : null
-    return TrayModel.ownedByOmarchy(item, layout)
+    return TrayModel.ownedByBeru(item, layout)
   }
 
   function bucket(category) {
@@ -171,7 +171,7 @@ BarWidget {
     for (var i = 0; i < values.length; i++) {
       var item = values[i]
       if (item.status === Status.Passive) continue
-      if (ownedByOmarchy(item)) continue
+      if (ownedByBeru(item)) continue
       if (category === "all") {
         result.push(item)
         continue
@@ -183,7 +183,7 @@ BarWidget {
 
   function persistTrayState(pinned, hidden) {
     if (!root.bar || !root.bar.shell || typeof root.bar.shell.updateEntryInline !== "function") return
-    var id = root.moduleName || "omarchy.tray"
+    var id = root.moduleName || "beru.tray"
     root.bar.shell.updateEntryInline(id, { id: id, pinned: pinned, hidden: hidden })
   }
 

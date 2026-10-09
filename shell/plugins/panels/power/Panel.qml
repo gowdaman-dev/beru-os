@@ -9,8 +9,8 @@ import "Model.js" as Model
 
 Panel {
   id: root
-  moduleName: "omarchy.power"
-  ipcTarget: "omarchy.power"
+  moduleName: "beru.power"
+  ipcTarget: "beru.power"
   // manageIpc: false so this panel can own the single IpcHandler the target
   // permits — needed for the togglePercentage method below.
   manageIpc: false
@@ -166,7 +166,7 @@ Panel {
 
   function setProfile(profile) {
     if (!profile || actionProc.running) return
-    actionProc.command = ["omarchy-powerprofiles-set", root.discharging ? "battery" : "ac", profile]
+    actionProc.command = ["beru-powerprofiles-set", root.discharging ? "battery" : "ac", profile]
     actionProc.running = true
   }
 
@@ -176,7 +176,7 @@ Panel {
   }
 
   ShellIpc {
-    target: "omarchy.power"
+    target: "beru.power"
 
     function open() { root.open() }
     function close() { root.close() }
@@ -208,19 +208,19 @@ Panel {
 
   Process {
     id: batteryProc
-    command: ["omarchy-battery-status", "--shell"]
+    command: ["beru-battery-status", "--shell"]
     stdout: StdioCollector { waitForEnd: true; onStreamFinished: root.updateKeyValue(text, "battery") }
   }
 
   Process {
     id: profilesProc
-    command: ["omarchy-powerprofiles-list", "--active-state"]
+    command: ["beru-powerprofiles-list", "--active-state"]
     stdout: StdioCollector { waitForEnd: true; onStreamFinished: root.updateProfiles(text) }
   }
 
   Process {
     id: systemProc
-    command: ["omarchy-system-stats"]
+    command: ["beru-system-stats"]
     stdout: StdioCollector { waitForEnd: true; onStreamFinished: root.updateKeyValue(text, "system") }
   }
 

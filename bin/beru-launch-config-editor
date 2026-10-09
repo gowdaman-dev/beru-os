@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# beru:summary=Open a config file in the user's editor and surface a toast
+# beru:args=<path>
+# beru:examples=beru launch config-editor ~/.config/hypr/hyprland.lua
+
+path="${1-}"
+
+if [[ -z $path ]]; then
+  echo "Usage: beru-launch-config-editor <path>" >&2
+  exit 1
+fi
+
+beru-notification-send -u low "Editing config file" "$path"
+exec beru-launch-editor "$path"

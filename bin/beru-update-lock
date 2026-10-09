@@ -1,0 +1,47 @@
+#!/bin/bash
+
+# beru:summary=Run a command while holding the Beru update lock
+# beru:args=<held|run> [command] [args...]
+# beru:hidden=true
+
+set -e
+
+lock_dir="${XDG_RUNTIME_DIR:-/tmp}"
+lock_path="$lock_dir/beru-update.lock"
+
+lock_is_held() {
+  local lock_fd_path=""
+
+  [[ -n ${BERU_UPDATE_LOCK_FD:-} && -e /proc/$$/fd/$BERU_UPDATE_LOCK_FD ]] || return 1
+
+  lock_fd_path=$(readlink -f "/proc/$$/fd/$BERU_UPDATE_LOCK_FD" 2>/dev/null || true)
+  [[ $lock_fd_path == "$(readlink -m "$lock_path")" ]] &&
+    flock -n "$BERU_UPDATE_LOCK_FD"
+}
+
+case "${1:-}" in
+  held)
+    lock_is_held
+    ;;
+  run)
+    shift
+    if (( $# == 0 )); then
+      echo "Usage: beru-update-lock run <command> [args...]" >&2
+      exit 2
+    fi
+
+    mkdir -p "$lock_dir" 2>/dev/null || true
+    exec {BERU_UPDATE_LOCK_FD}>"$lock_path"
+    if ! flock -n "$BERU_UPDATE_LOCK_FD"; then
+      echo "An Beru update is already running."
+      exit 1
+    fi
+
+    export BERU_UPDATE_LOCK_FD
+    exec "$@"
+    ;;
+  *)
+    echo "Usage: beru-update-lock <held|run> [command] [args...]" >&2
+    exit 2
+    ;;
+esac

@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# beru:summary=Toggle screensaver availability
+
+beru-toggle screensaver-off
+
+if beru-toggle-enabled screensaver-off; then
+  beru-notification-send -g 󱄄 "Screensaver disabled"
+else
+  beru-notification-send -g 󱄄 "Screensaver enabled"
+fi

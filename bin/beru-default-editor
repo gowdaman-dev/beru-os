@@ -1,0 +1,62 @@
+#!/bin/bash
+
+# beru:summary=Set the default editor used by beru-launch-editor
+# beru:args=[code|cursor|zed|sublime_text|helix|vim|emacs|nvim]
+# beru:examples=beru default editor | beru default editor code | beru default editor helix
+
+installing=false
+if [[ ${1:-} == "--install" ]]; then
+  installing=true
+  shift
+fi
+
+editor_file="$HOME/.local/state/beru/defaults/editor"
+
+if (($# == 0)); then
+  if [[ -f $editor_file ]]; then
+    read -r editor <"$editor_file"
+  fi
+
+  # sublime-text-4 ships `subl`; older defaults stored `sublime_text`.
+  [[ $editor == sublime_text ]] && editor=subl
+
+  [[ -n $editor ]] && echo "$editor" || echo "nvim"
+  exit 0
+fi
+
+case "$1" in
+code) selection="code"; editor="code"; name="VSCode"; glyph= ;;
+cursor) selection="cursor"; editor="cursor"; name="Cursor"; glyph= ;;
+zed | zeditor) selection="zed"; editor="zeditor"; name="Zed"; glyph= ;;
+sublime_text | subl) selection="sublime_text"; editor="subl"; name="Sublime Text"; glyph= ;;
+helix) selection="helix"; editor="helix"; name="Helix"; glyph= ;;
+vim) selection="vim"; editor="vim"; name="Vim"; glyph= ;;
+emacs) selection="emacs"; editor="emacs"; name="Emacs"; glyph= ;;
+nvim) selection="nvim"; editor="nvim"; name="Neovim"; glyph= ;;
+*)
+  echo "Usage: beru-default-editor <code|cursor|zed|sublime_text|helix|vim|emacs|nvim>"
+  exit 1
+  ;;
+esac
+
+if beru-cmd-missing "$editor"; then
+  if [[ $installing == "false" ]]; then
+    exec beru-launch-floating-terminal-with-presentation beru-default-editor --install "$selection"
+  else
+    case "$selection" in
+    code) beru-install-editor-vscode ;;
+    cursor) beru-pkg-add cursor-bin ;;
+    zed) beru-install-editor-zed ;;
+    sublime_text) beru-pkg-add sublime-text-4 ;;
+    helix) beru-install-editor-helix ;;
+    vim) beru-pkg-add vim ;;
+    emacs) beru-install-editor-emacs ;;
+    nvim) beru-pkg-add neovim ;;
+    esac || exit 1
+  fi
+fi
+
+mkdir -p "$(dirname "$editor_file")"
+printf '%s\n' "$editor" >"$editor_file"
+
+beru-notification-send -g $glyph "$name is now the default editor"

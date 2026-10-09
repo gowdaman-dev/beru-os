@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# beru:summary=Overwrite the user config for the Plymouth drive decryption and boot sequence with the Beru default and rebuild it.
+# beru:requires-sudo=true
+
+# Reuse the fixed-file publisher so root never resolves the source checkout or
+# follows a destination symlink while restoring the packaged assets.
+exec "$BERU_PATH/bin/beru-plymouth-set" --refresh-default

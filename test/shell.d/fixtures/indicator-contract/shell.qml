@@ -4,7 +4,7 @@ import Quickshell
 ShellRoot {
   id: root
 
-  property string resultPath: Quickshell.env("OMARCHY_QML_TEST_RESULT")
+  property string resultPath: Quickshell.env("BERU_QML_TEST_RESULT")
   property var failures: []
   property var commands: []
 
@@ -54,10 +54,10 @@ ShellRoot {
   QtObject {
     id: mockShell
     function firstPartyServiceFor(id) {
-      if (id === "omarchy.notifications") return notificationService
-      if (id === "omarchy.idle") return idleService
-      if (id === "omarchy.nightlight") return nightlightService
-      if (id === "omarchy.remote-session") return remoteSessionService
+      if (id === "beru.notifications") return notificationService
+      if (id === "beru.idle") return idleService
+      if (id === "beru.nightlight") return nightlightService
+      if (id === "beru.remote-session") return remoteSessionService
       return null
     }
   }
@@ -175,7 +175,7 @@ ShellRoot {
     return "'" + String(value).replace(/'/g, "'\\''") + "'"
   }
 
-  readonly property string rootPath: Quickshell.env("OMARCHY_PATH")
+  readonly property string rootPath: Quickshell.env("BERU_PATH")
 
   Timer {
     interval: 1
@@ -204,10 +204,10 @@ ShellRoot {
         screenRecording.moduleName = "ScreenRecording"
         root.injectBar(screenRecording)
         screenRecording.triggerPress(Qt.LeftButton)
-        root.assertTrue(root.commandCount("omarchy-menu toggle trigger.capture.screenrecord") === 1, "Screen Recording left click opens capture menu when idle")
+        root.assertTrue(root.commandCount("beru-menu toggle trigger.capture.screenrecord") === 1, "Screen Recording left click opens capture menu when idle")
         screenRecording.recording = true
         screenRecording.triggerPress(Qt.LeftButton)
-        root.assertTrue(root.commandCount("omarchy-capture-screenrecording --stop-recording") === 1, "Screen Recording left click stops active recording")
+        root.assertTrue(root.commandCount("beru-capture-screenrecording --stop-recording") === 1, "Screen Recording left click stops active recording")
       }
 
       var remoteSession = root.createIndicator("RemoteSession")

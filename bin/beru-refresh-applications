@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# beru:summary=Ensure default application launchers and mise wrappers are installed.
+
+# Copy .desktop declarations
+mkdir -p ~/.local/share/applications
+cp "$BERU_PATH"/applications/*.desktop ~/.local/share/applications/
+
+if beru-cmd-present alacritty; then
+  cp "$BERU_PATH/default/alacritty/Alacritty.desktop" ~/.local/share/applications/
+fi
+
+if [[ -f "$BERU_PATH/install/user/mise.sh" ]]; then
+  bash "$BERU_PATH/install/user/mise.sh"
+fi
+
+update-desktop-database ~/.local/share/applications

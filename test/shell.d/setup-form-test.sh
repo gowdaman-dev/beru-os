@@ -117,9 +117,9 @@ actual notices:   $actual"
 # The contract both callers read, and the ordering the shared list exists to keep
 source "$ROOT/install/provisioning/setup-form.sh"
 
-((OMARCHY_FORM_BACK == 1)) || fail "Esc reports status 1"
-((OMARCHY_FORM_SIGNAL == 130)) || fail "Ctrl+C reports status 130"
-[[ $(printf '%s\n' "$OMARCHY_KEYBOARD_LAYOUTS" | head -n 1) == "English (US)|us" ]] ||
+((BERU_FORM_BACK == 1)) || fail "Esc reports status 1"
+((BERU_FORM_SIGNAL == 130)) || fail "Ctrl+C reports status 130"
+[[ $(printf '%s\n' "$BERU_KEYBOARD_LAYOUTS" | head -n 1) == "English (US)|us" ]] ||
   fail "English (US) leads the keyboard layouts so gum choose opens on the default"
 pass "the form publishes the 0/1/130 status contract and leads with English (US)"
 
@@ -134,11 +134,11 @@ grep -qF -- '--selected English (US)' "$GUM_ARGS" || fail "keyboard prompt prese
 pass "keyboard prompt maps the chosen label to its keymap"
 
 run_prompt omarchy_prompt_keyboard "1:"
-assert_status "$OMARCHY_FORM_BACK" "keyboard prompt reports Esc as back"
+assert_status "$BERU_FORM_BACK" "keyboard prompt reports Esc as back"
 assert_returned "keyboard prompt survives Esc under set -e"
 
 run_prompt omarchy_prompt_keyboard "130:"
-assert_status "$OMARCHY_FORM_SIGNAL" "keyboard prompt reports Ctrl+C as the caller's signal"
+assert_status "$BERU_FORM_SIGNAL" "keyboard prompt reports Ctrl+C as the caller's signal"
 assert_returned "keyboard prompt survives Ctrl+C under set -e"
 pass "keyboard prompt propagates Esc and Ctrl+C without dying under set -e"
 
@@ -154,11 +154,11 @@ That username already exists on this machine"
 pass "username prompt rejects malformed, reserved, and taken names"
 
 run_prompt omarchy_prompt_username "1:"
-assert_status "$OMARCHY_FORM_BACK" "username prompt reports Esc as back"
+assert_status "$BERU_FORM_BACK" "username prompt reports Esc as back"
 assert_returned "username prompt survives Esc under set -e"
 
 run_prompt omarchy_prompt_username "130:"
-assert_status "$OMARCHY_FORM_SIGNAL" "username prompt reports Ctrl+C as the caller's signal"
+assert_status "$BERU_FORM_SIGNAL" "username prompt reports Ctrl+C as the caller's signal"
 assert_returned "username prompt survives Ctrl+C under set -e"
 pass "username prompt propagates Esc and Ctrl+C without dying under set -e"
 
@@ -172,11 +172,11 @@ Your password can't be blank!"
 pass "password prompt rejects mismatched and blank passwords"
 
 run_prompt omarchy_prompt_password "0:s3cret" "1:"
-assert_status "$OMARCHY_FORM_BACK" "password prompt reports Esc on the confirmation as back"
+assert_status "$BERU_FORM_BACK" "password prompt reports Esc on the confirmation as back"
 assert_returned "password confirmation survives Esc under set -e"
 
 run_prompt omarchy_prompt_password "0:s3cret" "130:"
-assert_status "$OMARCHY_FORM_SIGNAL" "password prompt reports Ctrl+C on the confirmation as the caller's signal"
+assert_status "$BERU_FORM_SIGNAL" "password prompt reports Ctrl+C on the confirmation as the caller's signal"
 assert_returned "password confirmation survives Ctrl+C under set -e"
 pass "password confirmation propagates Esc and Ctrl+C without dying under set -e"
 
@@ -188,7 +188,7 @@ assert_status 0 "identity prompt treats empty fields as answers"
 pass "identity prompt accepts skipped fields"
 
 run_prompt omarchy_prompt_identity "0:David" "1:"
-assert_status "$OMARCHY_FORM_BACK" "identity prompt reports Esc on the email as back"
+assert_status "$BERU_FORM_BACK" "identity prompt reports Esc on the email as back"
 assert_returned "identity prompt survives Esc under set -e"
 pass "identity prompt propagates Esc from its second field"
 
@@ -201,11 +201,11 @@ assert_notices "hostname prompt explains the rejection" "Hostname must be 1-63 l
 
 run_prompt omarchy_prompt_hostname "0:"
 assert_status 0 "hostname prompt accepts an empty hostname"
-[[ $(field hostname) == "$OMARCHY_HOSTNAME_DEFAULT" ]] || fail "hostname prompt falls back to the default hostname"
+[[ $(field hostname) == "$BERU_HOSTNAME_DEFAULT" ]] || fail "hostname prompt falls back to the default hostname"
 pass "hostname prompt rejects malformed names and defaults an empty one"
 
 run_prompt omarchy_prompt_hostname "1:"
-assert_status "$OMARCHY_FORM_BACK" "hostname prompt reports Esc as back"
+assert_status "$BERU_FORM_BACK" "hostname prompt reports Esc as back"
 assert_returned "hostname prompt survives Esc under set -e"
 pass "hostname prompt propagates Esc without dying under set -e"
 
@@ -231,10 +231,10 @@ assert_status 0 "timezone prompt accepts an empty selection"
 pass "timezone prompt falls back to UTC when nothing is selected"
 
 run_prompt omarchy_prompt_timezone "1:"
-assert_status "$OMARCHY_FORM_BACK" "timezone prompt reports Esc as back"
+assert_status "$BERU_FORM_BACK" "timezone prompt reports Esc as back"
 assert_returned "timezone prompt survives Esc under set -e"
 
 TZ_GUESS=Europe/Copenhagen run_prompt omarchy_prompt_timezone "130:"
-assert_status "$OMARCHY_FORM_SIGNAL" "timezone prompt reports Ctrl+C as the caller's signal"
+assert_status "$BERU_FORM_SIGNAL" "timezone prompt reports Ctrl+C as the caller's signal"
 assert_returned "timezone prompt survives Ctrl+C under set -e"
 pass "timezone prompt propagates Esc and Ctrl+C without dying under set -e"

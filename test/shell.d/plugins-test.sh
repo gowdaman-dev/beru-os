@@ -109,7 +109,7 @@ for (const manifestPath of manifests) {
     check(typeof manifest[field] === 'string' && manifest[field].length > 0, `${manifest.id || relativePath} must have ${field}`)
   }
 
-  check(String(manifest.id).startsWith('omarchy.'), `${manifest.id} must use the first-party namespace`)
+  check(String(manifest.id).startsWith('beru.'), `${manifest.id} must use the first-party namespace`)
   check(!String(manifest.id).includes('/') && !String(manifest.id).includes('..'), `${manifest.id} must be safe as a plugin id`)
   check(!ids.has(manifest.id), `${manifest.id} must be unique`)
   ids.add(manifest.id)
@@ -157,9 +157,9 @@ for (const manifestPath of manifests) {
     check(JSON.stringify(manifest.kinds) === JSON.stringify(['bar-widget']), `${manifest.id} sibling manifest must be a bar widget`)
   }
 
-  const clonePaths = manifest.omarchy?.clonePaths
+  const clonePaths = manifest.beru?.clonePaths
   if (clonePaths !== undefined) {
-    check(Array.isArray(clonePaths), `${manifest.id} omarchy.clonePaths must be an array`)
+    check(Array.isArray(clonePaths), `${manifest.id} beru.clonePaths must be an array`)
     const cloneTargets = new Set()
     for (const clonePath of Array.isArray(clonePaths) ? clonePaths : []) {
       const valid = isPlainObject(clonePath)
@@ -190,14 +190,14 @@ const byId = Object.fromEntries(manifests.map(manifestPath => {
   return [manifest.id, manifest]
 }))
 for (const [id, section] of Object.entries({
-  'omarchy.active-window': 'left',
-  'omarchy.dropbox': 'right'
+  \'beru.active-window\': 'left',
+  \'beru.dropbox\': 'right'
 })) {
   check(byId[id]?.barWidget?.defaultSection === section, `${id} must default to the ${section} bar section`)
 }
-check(byId['omarchy.media']?.barWidget?.defaultSection === undefined, 'omarchy.media must use the center fallback')
+check(byId[\'beru.media\']?.barWidget?.defaultSection === undefined, 'beru.media must use the center fallback')
 
-for (const id of ['omarchy.lock', 'omarchy.idle', 'omarchy.polkit', 'omarchy.notifications', 'omarchy.media']) {
+for (const id of [\'beru.lock\', \'beru.idle\', \'beru.polkit\', \'beru.notifications\', \'beru.media\']) {
   check(byId[id]?.keepLoaded === true, `${id} must stay loaded across plugin reloads`)
 }
 

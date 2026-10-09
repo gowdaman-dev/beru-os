@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# beru:summary=Restore the default Beru Plymouth boot theme and SDDM login screen
+# beru:requires-sudo=true
+
+set -euo pipefail
+
+"$BERU_PATH/bin/beru-refresh-plymouth"
+"$BERU_PATH/bin/beru-refresh-sddm"

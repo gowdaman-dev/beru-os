@@ -1,0 +1,5 @@
+#!/bin/bash
+
+# beru:summary=Launch or attach to the persistent herdr session in a terminal
+
+exec beru-launch-terminal herdr

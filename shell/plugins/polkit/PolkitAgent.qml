@@ -169,7 +169,7 @@ Item {
 
   Process {
     id: laptopClosedProc
-    command: ["bash", "-c", "omarchy-hw-laptop-closed && echo closed || echo open"]
+    command: ["bash", "-c", "beru-hw-laptop-closed && echo closed || echo open"]
     stdout: StdioCollector { id: laptopClosedOut; waitForEnd: true }
     onExited: root.laptopClosed = String(laptopClosedOut.text || "").trim() === "closed"
   }
@@ -224,7 +224,7 @@ Item {
     visible: root.dialogVisible
     anchors { top: true; bottom: true; left: true; right: true }
     color: "transparent"
-    WlrLayershell.namespace: "omarchy-polkit"
+    WlrLayershell.namespace: "beru-polkit"
     WlrLayershell.layer: WlrLayer.Overlay
     WlrLayershell.keyboardFocus: WlrKeyboardFocus.Exclusive
     exclusionMode: ExclusionMode.Ignore

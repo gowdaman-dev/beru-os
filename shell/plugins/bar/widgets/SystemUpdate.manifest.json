@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "id": "omarchy.system-update",
-  "name": "Omarchy update",
+  "id": "beru.system-update",
+  "name": "Beru update",
   "version": "1.0.0",
-  "author": "Omarchy",
-  "description": "Indicates available Omarchy updates",
+  "author": "Beru",
+  "description": "Indicates available Beru updates",
   "kinds": [
     "bar-widget"
   ],
@@ -12,8 +12,8 @@
     "barWidget": "SystemUpdate.qml"
   },
   "barWidget": {
-    "displayName": "Omarchy update",
-    "description": "Indicates available Omarchy updates",
+    "displayName": "Beru update",
+    "description": "Indicates available Beru updates",
     "category": "System",
     "allowMultiple": false
   }

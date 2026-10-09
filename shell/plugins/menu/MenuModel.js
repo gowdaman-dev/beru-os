@@ -386,20 +386,20 @@ function displayRow(items, itemOrder, checkedResults, disabledResults, entry, de
 
 // Commands a `checked:` expression reads a value out of. Every sibling row
 // asks the same one -- Defaults > Browser has seven rows all comparing
-// against `omarchy-default-browser` -- so the batch runs it once and the rows
+// against `beru-default-browser` -- so the batch runs it once and the rows
 // read the captured answer.
 //
 // The capture has to be eager. These are read inside `$(...)`, and a value
 // cached while one expression runs lives in that subshell only, so a lazy
 // memo never survives to the expression after it.
 var GUARD_READERS = [
-  "omarchy-channel-current",
-  "omarchy-default-agent",
-  "omarchy-default-browser",
-  "omarchy-default-editor",
-  "omarchy-default-terminal",
-  "omarchy-default-dictation",
-  "omarchy-dns"
+  "beru-channel-current",
+  "beru-default-agent",
+  "beru-default-browser",
+  "beru-default-editor",
+  "beru-default-terminal",
+  "beru-default-dictation",
+  "beru-dns"
 ]
 
 // Package and command presence account for most of what the guards ask, and
@@ -429,10 +429,10 @@ function guardHelpers() {
     + 'for __omarchy_pkg in "${__omarchy_pkg_names[@]}"; do __omarchy_pkgs[$__omarchy_pkg]=1; done\n'
     + '__omarchy_pkg_has() { [[ -n ${__omarchy_pkgs[$1]-} ]] && return 0; '
     + '[[ $1 == *[\\<\\>=]* ]] && { pacman -Q "$1" &>/dev/null; return; }; return 1; }\n'
-    + 'omarchy-pkg-present() { local p; for p in "$@"; do __omarchy_pkg_has "$p" || return 1; done; return 0; }\n'
-    + 'omarchy-pkg-missing() { local p; for p in "$@"; do __omarchy_pkg_has "$p" || return 0; done; return 1; }\n'
-    + 'omarchy-cmd-present() { local c; for c in "$@"; do command -v "$c" &>/dev/null || return 1; done; return 0; }\n'
-    + 'omarchy-cmd-missing() { local c; for c in "$@"; do command -v "$c" &>/dev/null || return 0; done; return 1; }\n'
+    + 'beru-pkg-present() { local p; for p in "$@"; do __omarchy_pkg_has "$p" || return 1; done; return 0; }\n'
+    + 'beru-pkg-missing() { local p; for p in "$@"; do __omarchy_pkg_has "$p" || return 0; done; return 1; }\n'
+    + 'beru-cmd-present() { local c; for c in "$@"; do command -v "$c" &>/dev/null || return 1; done; return 0; }\n'
+    + 'beru-cmd-missing() { local c; for c in "$@"; do command -v "$c" &>/dev/null || return 0; done; return 1; }\n'
 }
 
 // Substitute the captured answer into the expression rather than shadowing
@@ -496,7 +496,7 @@ function guardScript(items) {
 // bare call, such as a second command or a shell-expanded payload, is left to
 // bash.
 function summonAction(action) {
-  var match = /^omarchy-shell shell summon ([A-Za-z0-9._-]+)(?: '([^']*)')?$/.exec(String(action || ""))
+  var match = /^beru-shell shell summon ([A-Za-z0-9._-]+)(?: '([^']*)')?$/.exec(String(action || ""))
   if (!match) return null
   return { id: match[1], payload: match[2] || "{}" }
 }

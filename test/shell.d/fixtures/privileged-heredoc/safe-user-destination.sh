@@ -1,9 +1,9 @@
-mkdir -p ~/.config/omarchy
+mkdir -p ~/.config/beru
 
-cat >~/.config/omarchy/agent.conf <<EOF
-helper=$HOME/.local/share/omarchy/bin/omarchy-agent
+cat >~/.config/beru/agent.conf <<EOF
+helper=$HOME/.local/share/beru/bin/beru-agent
 EOF
 
-cat >"$HOME/.local/bin/omarchy-shim" <<EOF
-exec "$OMARCHY_PATH/bin/omarchy-agent" "$@"
+cat >"$HOME/.local/bin/beru-shim" <<EOF
+exec "$BERU_PATH/bin/beru-agent" "$@"
 EOF

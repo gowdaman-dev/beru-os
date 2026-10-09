@@ -25,7 +25,7 @@ hl = {
     recovery = callback
   end,
   exec_cmd = function(value)
-    if value == "omarchy-launch-shell" then
+    if value == "beru-launch-shell" then
       assert(config.invisible and env.XCURSOR_THEME == "my-xcursor", "hide the compositor cursor while restoring application settings before launch")
     end
     command = value
@@ -37,7 +37,7 @@ require("default.hypr.autostart")
 assert(not config.invisible, "loading the module must wait for user configuration")
 events["config.reloaded"]()
 assert(config.invisible and not config.enable_hyprcursor and not config.sync_gsettings_theme)
-assert(env.XCURSOR_THEME == "omarchy-startup" and env.XCURSOR_PATH:match("/default/hypr/cursors:/my/icons$"))
+assert(env.XCURSOR_THEME == "beru-startup" and env.XCURSOR_PATH:match("/default/hypr/cursors:/my/icons$"))
 assert(omarchy_startup_cursor_pending, "the first compositor frame must use the blank cursor")
 events["hyprland.start"]()
 assert(env.XCURSOR_THEME == "my-xcursor" and env.XCURSOR_PATH == "/my/icons", "applications must inherit the user's cursor")

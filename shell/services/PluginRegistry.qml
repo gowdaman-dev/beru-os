@@ -8,7 +8,7 @@ QtObject {
   id: registry
 
   property string home: Quickshell.env("HOME")
-  property string pluginsDir: home + "/.config/omarchy/plugins"
+  property string pluginsDir: home + "/.config/beru/plugins"
 
   // Set by shell.qml at startup so we can also scan bundled first-party plugins.
   property string firstPartyDir: ""
@@ -138,8 +138,8 @@ QtObject {
   // overlays, services).
   //
   // Special cases (implicitly always enabled, no shell.json entry needed):
-  //   - the built-in bar option (`omarchy.bar`) is active when `bar.id` is
-  //     missing or set to `omarchy.bar`.
+  //   - the built-in bar option (`beru.bar`) is active when `bar.id` is
+  //     missing or set to `beru.bar`.
   //   - first-party non-bar plugins are shell infrastructure (settings,
   //     image-picker, ...). Requiring users to add them to plugins[] just to
   //     summon them was a footgun: a stock shell.json with `plugins: []` would
@@ -154,7 +154,7 @@ QtObject {
         var selectedBar = ""
         if (Util.isPlainObject(config) && Util.isPlainObject(config.bar))
           selectedBar = Util.canonicalWidgetId(String(config.bar.id || ""))
-        if (!selectedBar) selectedBar = "omarchy.bar"
+        if (!selectedBar) selectedBar = "beru.bar"
         return selectedBar === key
       }
       if (isDisabled(config, key)) return false
@@ -184,7 +184,7 @@ QtObject {
   // A bar widget is on when it sits in the bar, whoever shipped it. That is a
   // different question from isEnabled(), which decides whether the widget's
   // component is loaded at all — a built-in stays loadable so it can be put
-  // back, and so a plugin that is both a widget and a menu (omarchy.menu)
+  // back, and so a plugin that is both a widget and a menu (beru.menu)
   // cannot be locked out of the shell by taking its button off the bar.
   function inBar(id) {
     var config = shellConfigProvider ? shellConfigProvider() : null
@@ -267,7 +267,7 @@ QtObject {
       return { section: section, index: Math.min(requested, config.bar.layout[section].length) }
     }
 
-    var anchors = { left: "omarchy.workspaces", center: "omarchy.weather", right: "omarchy.tray" }
+    var anchors = { left: "beru.workspaces", center: "beru.weather", right: "beru.tray" }
     var anchor = findRelativeBarLocation(config, anchors[section], section)
     return {
       section: section,
@@ -443,7 +443,7 @@ QtObject {
     var isBarOption = cloneManifest && Array.isArray(cloneManifest.kinds)
       && cloneManifest.kinds.indexOf("bar") !== -1
     if (isBarOption) {
-      if (sourceId === "omarchy.bar") delete config.bar.id
+      if (sourceId === "beru.bar") delete config.bar.id
       else config.bar.id = sourceId
     } else {
       var cloneLocation = findEntryLocation(config, cloneId)
@@ -512,7 +512,7 @@ QtObject {
         if (value) {
           config.bar.id = key
         } else if (Util.canonicalWidgetId(String(config.bar.id || "")) === key) {
-          if (clonedFrom && clonedFrom !== "omarchy.bar") config.bar.id = clonedFrom
+          if (clonedFrom && clonedFrom !== "beru.bar") config.bar.id = clonedFrom
           else delete config.bar.id
         }
         return
@@ -629,7 +629,7 @@ QtObject {
     for (var tk in thirdParty) {
       if (firstParty[tk] || String(tk).indexOf("omarchy.") === 0) {
         console.warn("PluginRegistry: plugin " + tk
-          + " rejected: id is reserved for first-party Omarchy plugins")
+          + " rejected: id is reserved for first-party Beru plugins")
         continue
       }
       merged[tk] = thirdParty[tk]
@@ -695,7 +695,7 @@ QtObject {
     // First-party bar widgets can also carry sibling manifests such as
     // widgets/Clock.manifest.json so multiple widgets can live in one source
     // directory without wrapper folders.
-    // Third-party plugins stay at the top level of ~/.config/omarchy/plugins.
+    // Third-party plugins stay at the top level of ~/.config/beru/plugins.
     var script = ""
       + "emit_manifest() { local kind=\"$1\"; local manifest=\"$2\"; local sub; "
       + "  if [[ ${manifest##*/} == \"manifest.json\" ]]; then sub=\"${manifest%/manifest.json}\"; else sub=\"$(dirname -- \"$manifest\")\"; fi; "

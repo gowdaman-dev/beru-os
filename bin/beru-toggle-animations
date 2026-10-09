@@ -1,0 +1,22 @@
+#!/bin/bash
+
+# beru:summary=Toggle animations, transparency and other effects that are slow without a GPU
+# beru:args=[toggle|on|off]
+# beru:examples=beru toggle animations | beru toggle animations off | beru toggle animations on
+
+# The flag records animations being off, so on and off swap on the way through.
+case ${1:-toggle} in
+toggle) beru-hyprland-toggle no-animations toggle ;;
+on) beru-hyprland-toggle no-animations off ;;
+off) beru-hyprland-toggle no-animations on ;;
+*)
+  echo "Usage: beru-toggle-animations [toggle|on|off]" >&2
+  exit 1
+  ;;
+esac
+
+if beru-hyprland-toggle-enabled no-animations; then
+  beru-notification-send -g 󰕟 "Animations disabled"
+else
+  beru-notification-send -g 󰕟 "Animations enabled"
+fi

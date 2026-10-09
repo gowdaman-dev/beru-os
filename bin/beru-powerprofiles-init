@@ -1,0 +1,5 @@
+#!/bin/bash
+
+# beru:summary=Set the correct power profile on boot based on current AC/battery state.
+
+exec beru-powerprofiles-set autodetect

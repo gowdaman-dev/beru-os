@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# beru:summary=Toggle mirroring theme changes to and from your herdr machines
+
+beru-toggle herdr-theme-sync
+
+if beru-toggle-enabled herdr-theme-sync; then
+  beru-notification-send -g 󰸌 "Herdr theme sync enabled"
+else
+  beru-notification-send -g 󰸌 "Herdr theme sync disabled"
+fi

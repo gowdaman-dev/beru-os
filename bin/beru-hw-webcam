@@ -1,0 +1,5 @@
+#!/bin/bash
+
+# beru:summary=Check whether a webcam is available
+
+[[ -n $(beru-capture-webcam-list) ]]

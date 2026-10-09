@@ -11,7 +11,7 @@ import "AppSearch.js" as AppSearch
 Item {
   id: root
 
-  property string omarchyPath: Quickshell.env("OMARCHY_PATH")
+  property string omarchyPath: Quickshell.env("BERU_PATH")
 
   property var configuredHiddenEntryIds: ({})
   property var desktopHiddenEntryIds: ({})
@@ -88,7 +88,7 @@ Item {
   function remove(desktopId, name) {
     var id = String(desktopId || "")
     if (!id) return
-    Util.execDetached(Util.shellQuote(root.omarchyPath + "/bin/omarchy-remove-launcher-entry") + " " + Util.shellQuote(id) + " " + Util.shellQuote(String(name || id)))
+    Util.execDetached(Util.shellQuote(root.omarchyPath + "/bin/beru-remove-launcher-entry") + " " + Util.shellQuote(id) + " " + Util.shellQuote(String(name || id)))
   }
 
   function normalizeDesktopId(id) {
@@ -171,7 +171,7 @@ Item {
     launchDelay.stop()
     launchTimeout.stop()
     if (root.launchOsdOpen) {
-      Quickshell.execDetached(["omarchy-shell", "osd", "close"])
+      Quickshell.execDetached(["beru-shell", "osd", "close"])
       root.launchOsdOpen = false
     }
   }
@@ -242,7 +242,7 @@ Item {
     onTriggered: {
       if (root.toplevelCount() > root.launchToplevelCount || ToplevelManager.activeToplevel !== root.launchActiveToplevel) return
       root.launchOsdOpen = true
-      Quickshell.execDetached(["omarchy-shell", "osd", "show", JSON.stringify({ icon: "󱓞", message: root.launchOsdMessage, duration: 0 })])
+      Quickshell.execDetached(["beru-shell", "osd", "show", JSON.stringify({ icon: "󱓞", message: root.launchOsdMessage, duration: 0 })])
     }
   }
 

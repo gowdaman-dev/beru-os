@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# beru:summary=Record dictation using Superwhisper
+# beru:args=<start|stop|toggle>
+
+case "${1:-}" in
+  start) superwhisper start ;;
+  stop)
+    if beru-cmd-missing superwhisper || ! systemctl --user is-active --quiet superwhisper.service; then
+      exit 0
+    else
+      superwhisper stop
+    fi
+    ;;
+  toggle) superwhisper record ;;
+  *) echo "Usage: beru dictation superwhisper <start|stop|toggle>" >&2; exit 1 ;;
+esac

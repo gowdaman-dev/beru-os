@@ -1,1 +1,1 @@
-omarchy-apply-lock
+beru-apply-lock

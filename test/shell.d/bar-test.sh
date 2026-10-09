@@ -5,9 +5,9 @@ set -euo pipefail
 source "$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/base-test.sh"
 
 # The command fixture follows the runtime invariant and reads defaults through
-# OMARCHY_PATH. Point it at this checkout rather than whichever install launched
-# the test (or nothing at all on a non-Omarchy development machine).
-export OMARCHY_PATH="$ROOT"
+# BERU_PATH. Point it at this checkout rather than whichever install launched
+# the test (or nothing at all on a non-Beru development machine).
+export BERU_PATH="$ROOT"
 
 if perl -0ne 'exit(/drag\s*\.\s*target\s*:\s*[^;]*\bslot\b/s ? 0 : 1)' "$ROOT/shell/plugins/bar/Bar.qml"; then
   fail "bar module dragging must not mutate ModuleSlot positions"
@@ -97,8 +97,8 @@ assert(
 // A center module is mounted twice — drawn copy plus zero-size placeholder —
 // and the order they register in is not stable across a live reconfiguration,
 // so panel routing has to pick the one that is actually on screen.
-const drawn = { moduleName: 'omarchy.clock', visible: true, width: 28, height: 81 }
-const placeholder = { moduleName: 'omarchy.clock', visible: false, width: 0, height: 0 }
+const drawn = { moduleName: \'beru.clock\', visible: true, width: 28, height: 81 }
+const placeholder = { moduleName: \'beru.clock\', visible: false, width: 0, height: 0 }
 assertEqual(bar.isDrawnSlot(drawn), true, 'bar recognises a drawn slot')
 assertEqual(bar.isDrawnSlot(placeholder), false, 'bar recognises a layout placeholder')
 assertEqual(bar.pickDrawnSlot([placeholder, drawn]), drawn, 'bar picks the drawn slot when the placeholder registers first')
@@ -170,8 +170,8 @@ assert(
 
 // A bar surface is built per monitor, so a panel hotkey has one live copy of
 // the widget per screen to choose between.
-const internal = { moduleName: 'omarchy.audio', visible: true, width: 28, height: 81 }
-const external = { moduleName: 'omarchy.audio', visible: true, width: 28, height: 81 }
+const internal = { moduleName: \'beru.audio\', visible: true, width: 28, height: 81 }
+const external = { moduleName: \'beru.audio\', visible: true, width: 28, height: 81 }
 const row = (slot, screenName, opened) => ({ slot, screenName, opened: opened === true })
 const copies = [row(internal, 'eDP-1'), row(external, 'DP-1')]
 assertEqual(
@@ -309,20 +309,20 @@ assert(
 
 assertEqual(bar.normalizePosition('left'), 'left', 'bar accepts valid positions')
 assertEqual(bar.normalizePosition('sideways'), 'top', 'bar defaults invalid positions')
-assertDeepEqual(bar.entrySettings({ id: 'omarchy.clock', format: 'HH:mm' }), { format: 'HH:mm' }, 'bar extracts entry settings')
-assertEqual(bar.entryId({ id: 'omarchy.clock' }), 'omarchy.clock', 'bar extracts object entry ids')
-assertEqual(bar.entryId('omarchy.clock'), 'omarchy.clock', 'bar extracts string entry ids')
+assertDeepEqual(bar.entrySettings({ id: \'beru.clock\', format: 'HH:mm' }), { format: 'HH:mm' }, 'bar extracts entry settings')
+assertEqual(bar.entryId({ id: \'beru.clock\' }), \'beru.clock\', 'bar extracts object entry ids')
+assertEqual(bar.entryId(\'beru.clock\'), \'beru.clock\', 'bar extracts string entry ids')
 
-const entries = [{ id: 'a' }, { id: 'omarchy.tray' }, { id: 'b' }]
-assertDeepEqual(bar.pinTrayToInner(entries, 'left').map(bar.entryId), ['a', 'b', 'omarchy.tray'], 'bar pins tray to left inner edge')
-assertDeepEqual(bar.pinTrayToInner(entries, 'right').map(bar.entryId), ['omarchy.tray', 'a', 'b'], 'bar pins tray to right inner edge')
+const entries = [{ id: 'a' }, { id: \'beru.tray\' }, { id: 'b' }]
+assertDeepEqual(bar.pinTrayToInner(entries, 'left').map(bar.entryId), ['a', 'b', \'beru.tray\'], 'bar pins tray to left inner edge')
+assertDeepEqual(bar.pinTrayToInner(entries, 'right').map(bar.entryId), [\'beru.tray\', 'a', 'b'], 'bar pins tray to right inner edge')
 
 // A settings-only shell.json write must patch the live bar, not rebuild it:
 // the module Repeaters recreate every widget when their array model changes.
-const settingsLayout = { left: [{ id: 'omarchy.power' }], center: [{ id: 'omarchy.clock', format: 'HH:mm' }], right: [] }
+const settingsLayout = { left: [{ id: \'beru.power\' }], center: [{ id: \'beru.clock\', format: 'HH:mm' }], right: [] }
 assertDeepEqual(
-  bar.inlineSettingsDelta(settingsLayout, { left: [{ id: 'omarchy.power', showPercentage: true }], center: [{ id: 'omarchy.clock', format: 'HH:mm' }], right: [] }),
-  [{ region: 'left', index: 0, entry: { id: 'omarchy.power', showPercentage: true } }],
+  bar.inlineSettingsDelta(settingsLayout, { left: [{ id: \'beru.power\', showPercentage: true }], center: [{ id: \'beru.clock\', format: 'HH:mm' }], right: [] }),
+  [{ region: 'left', index: 0, entry: { id: \'beru.power\', showPercentage: true } }],
   'bar reports a settings-only change as an inline delta'
 )
 assertDeepEqual(
@@ -331,12 +331,12 @@ assertDeepEqual(
   'bar reports an unchanged layout as an empty delta'
 )
 assertEqual(
-  bar.inlineSettingsDelta(settingsLayout, { left: [{ id: 'omarchy.clock', format: 'HH:mm' }], center: [{ id: 'omarchy.power' }], right: [] }),
+  bar.inlineSettingsDelta(settingsLayout, { left: [{ id: \'beru.clock\', format: 'HH:mm' }], center: [{ id: \'beru.power\' }], right: [] }),
   null,
   'bar treats reordered entries as structural'
 )
 assertEqual(
-  bar.inlineSettingsDelta(settingsLayout, { left: [{ id: 'omarchy.power' }, { id: 'omarchy.battery' }], center: settingsLayout.center, right: [] }),
+  bar.inlineSettingsDelta(settingsLayout, { left: [{ id: \'beru.power\' }, { id: \'beru.battery\' }], center: settingsLayout.center, right: [] }),
   null,
   'bar treats added entries as structural'
 )
@@ -363,8 +363,8 @@ assert(
 
 assertEqual(bar.moduleString({ id: 'custom', label: 42 }, 'label', 'fallback'), '42', 'bar stringifies module settings')
 assertEqual(bar.entryIndex(entries, 'b'), 2, 'bar finds entry indexes')
-assertDeepEqual(bar.entriesBefore(entries, 'b').map(bar.entryId), ['a', 'omarchy.tray'], 'bar returns entries before target')
-assertDeepEqual(bar.entriesAfter(entries, 'a').map(bar.entryId), ['omarchy.tray', 'b'], 'bar returns entries after target')
+assertDeepEqual(bar.entriesBefore(entries, 'b').map(bar.entryId), ['a', \'beru.tray\'], 'bar returns entries before target')
+assertDeepEqual(bar.entriesAfter(entries, 'a').map(bar.entryId), [\'beru.tray\', 'b'], 'bar returns entries after target')
 
 assertEqual(bar.expandPath('~/module.qml', '/home/dhh'), '/home/dhh/module.qml', 'bar expands tilde paths')
 assertEqual(bar.expandPath('$HOME/module.qml', '/home/dhh'), '/home/dhh/module.qml', 'bar expands HOME paths')
@@ -373,8 +373,8 @@ assert(!bar.customModuleSafeName('../escape'), 'bar rejects path traversal custo
 assertEqual(bar.customModuleType({ id: 'custom', exec: 'date' }), 'command', 'bar infers command custom modules')
 assertEqual(bar.customModuleType({ id: 'custom', source: '~/Custom.qml' }), 'qml', 'bar infers qml custom modules')
 assertEqual(
-  bar.customModulePath({ id: 'local.weather' }, '/home/dhh', '/home/dhh/.config/omarchy'),
-  '/home/dhh/.config/omarchy/bar/modules/local.weather.qml',
+  bar.customModulePath({ id: 'local.weather' }, '/home/dhh', '/home/dhh/.config/beru'),
+  '/home/dhh/.config/beru/bar/modules/local.weather.qml',
   'bar builds default custom module paths'
 )
 JS
@@ -382,33 +382,33 @@ JS
 put_tmp=$(mktemp -d)
 trap 'rm -rf "$put_tmp"' EXIT
 mkdir -p "$put_tmp/bin"
-ln -s "$ROOT/bin/omarchy-shell-config" "$put_tmp/bin/omarchy-shell-config"
+ln -s "$ROOT/bin/beru-shell-config" "$put_tmp/bin/beru-shell-config"
 
-cat >"$put_tmp/bin/omarchy-shell" <<'STUB'
+cat >"$put_tmp/bin/beru-shell" <<'STUB'
 #!/bin/bash
-case ${OMARCHY_TEST_SHELL_STATE:-ready} in
+case ${BERU_TEST_SHELL_STATE:-ready} in
   missing)
-    echo "omarchy-shell is not running" >&2
+    echo "beru-shell is not running" >&2
     exit 1
     ;;
   starting)
-    echo "omarchy-shell is not ready" >&2
+    echo "beru-shell is not ready" >&2
     exit 1
     ;;
   crashing)
     # Seen coming up, then gone.
-    if [[ -e $OMARCHY_TEST_SHELL_MARKER ]]; then
-      echo "omarchy-shell is not running" >&2
+    if [[ -e $BERU_TEST_SHELL_MARKER ]]; then
+      echo "beru-shell is not running" >&2
     else
-      touch "$OMARCHY_TEST_SHELL_MARKER"
-      echo "omarchy-shell is not ready" >&2
+      touch "$BERU_TEST_SHELL_MARKER"
+      echo "beru-shell is not ready" >&2
     fi
     exit 1
     ;;
   oldshell)
     # A shell from before put learned to fall back.
     if [[ $4 == *"after"* ]]; then
-      echo "could not find target widget omarchy.clock"
+      echo "could not find target widget beru.clock"
     else
       echo "ok"
     fi
@@ -416,20 +416,20 @@ case ${OMARCHY_TEST_SHELL_STATE:-ready} in
     ;;
   spawning)
     # Launched, but with no socket to answer on yet.
-    if [[ ! -e $OMARCHY_TEST_SHELL_MARKER ]]; then
-      touch "$OMARCHY_TEST_SHELL_MARKER"
-      echo "omarchy-shell is not running" >&2
+    if [[ ! -e $BERU_TEST_SHELL_MARKER ]]; then
+      touch "$BERU_TEST_SHELL_MARKER"
+      echo "beru-shell is not running" >&2
       exit 1
     fi
     ;;
   vanishing)
     # Answers the first ask, then is gone before the fallback lands.
-    if [[ ! -e $OMARCHY_TEST_SHELL_MARKER ]]; then
-      touch "$OMARCHY_TEST_SHELL_MARKER"
-      echo "could not find target widget omarchy.clock"
+    if [[ ! -e $BERU_TEST_SHELL_MARKER ]]; then
+      touch "$BERU_TEST_SHELL_MARKER"
+      echo "could not find target widget beru.clock"
       exit 0
     fi
-    echo "omarchy-shell is not running" >&2
+    echo "beru-shell is not running" >&2
     exit 1
     ;;
   unsupported)
@@ -439,8 +439,8 @@ case ${OMARCHY_TEST_SHELL_STATE:-ready} in
     ;;
   scanning)
     # Answering IPC, but has not read the plugins yet.
-    if [[ ! -e $OMARCHY_TEST_SHELL_MARKER ]]; then
-      touch "$OMARCHY_TEST_SHELL_MARKER"
+    if [[ ! -e $BERU_TEST_SHELL_MARKER ]]; then
+      touch "$BERU_TEST_SHELL_MARKER"
       echo "not ready"
       exit 0
     fi
@@ -448,63 +448,63 @@ case ${OMARCHY_TEST_SHELL_STATE:-ready} in
 esac
 echo "ok"
 STUB
-chmod +x "$put_tmp/bin/omarchy-shell"
+chmod +x "$put_tmp/bin/beru-shell"
 
-put_output=$(PATH="$put_tmp/bin:$ROOT/bin:$PATH" OMARCHY_TEST_SHELL_STATE=missing \
-  OMARCHY_SHELL_ABSENT_ATTEMPTS=2 \
-  "$ROOT/bin/omarchy-bar" put omarchy.keyboard-layout --after omarchy.clock 2>&1) ||
+put_output=$(PATH="$put_tmp/bin:$ROOT/bin:$PATH" BERU_TEST_SHELL_STATE=missing \
+  BERU_SHELL_ABSENT_ATTEMPTS=2 \
+  "$ROOT/bin/beru-bar" put beru.keyboard-layout --after beru.clock 2>&1) ||
   fail "put carries on when no shell is running" "$put_output"
 [[ $put_output == *"is not running"* ]] || fail "put says why it placed nothing" "$put_output"
 pass "put carries on when no shell is running"
 
-put_output=$(PATH="$put_tmp/bin:$ROOT/bin:$PATH" OMARCHY_TEST_SHELL_STATE=spawning \
-  OMARCHY_TEST_SHELL_MARKER="$put_tmp/spawned" \
-  "$ROOT/bin/omarchy-bar" put omarchy.keyboard-layout --after omarchy.clock 2>&1) ||
+put_output=$(PATH="$put_tmp/bin:$ROOT/bin:$PATH" BERU_TEST_SHELL_STATE=spawning \
+  BERU_TEST_SHELL_MARKER="$put_tmp/spawned" \
+  "$ROOT/bin/beru-bar" put beru.keyboard-layout --after beru.clock 2>&1) ||
   fail "put waits for a shell that is being spawned" "$put_output"
-[[ $put_output == "omarchy.keyboard-layout is on the bar" ]] || fail "put places once the shell answers" "$put_output"
+[[ $put_output == "beru.keyboard-layout is on the bar" ]] || fail "put places once the shell answers" "$put_output"
 pass "put waits for a shell that is being spawned"
 
-put_output=$(PATH="$put_tmp/bin:$ROOT/bin:$PATH" OMARCHY_TEST_SHELL_STATE=starting OMARCHY_SHELL_READY_ATTEMPTS=2 \
-  "$ROOT/bin/omarchy-bar" put omarchy.keyboard-layout --after omarchy.clock 2>&1) &&
+put_output=$(PATH="$put_tmp/bin:$ROOT/bin:$PATH" BERU_TEST_SHELL_STATE=starting BERU_SHELL_READY_ATTEMPTS=2 \
+  "$ROOT/bin/beru-bar" put beru.keyboard-layout --after beru.clock 2>&1) &&
   fail "put fails when the shell never becomes ready" "$put_output"
 [[ $put_output == *"did not become ready"* ]] || fail "put says the shell never became ready" "$put_output"
 pass "put fails when the shell never becomes ready"
 
-put_output=$(PATH="$put_tmp/bin:$ROOT/bin:$PATH" OMARCHY_TEST_SHELL_STATE=crashing \
-  OMARCHY_TEST_SHELL_MARKER="$put_tmp/started" \
-  "$ROOT/bin/omarchy-bar" put omarchy.keyboard-layout --after omarchy.clock 2>&1) &&
+put_output=$(PATH="$put_tmp/bin:$ROOT/bin:$PATH" BERU_TEST_SHELL_STATE=crashing \
+  BERU_TEST_SHELL_MARKER="$put_tmp/started" \
+  "$ROOT/bin/beru-bar" put beru.keyboard-layout --after beru.clock 2>&1) &&
   fail "put fails when a starting shell disappears" "$put_output"
 [[ $put_output == *"did not become ready"* ]] || fail "put keeps a lost shell retryable" "$put_output"
 pass "put fails when a starting shell disappears"
 
-put_output=$(PATH="$put_tmp/bin:$ROOT/bin:$PATH" OMARCHY_TEST_SHELL_STATE=oldshell \
-  "$ROOT/bin/omarchy-bar" put omarchy.keyboard-layout --after omarchy.clock 2>&1) ||
+put_output=$(PATH="$put_tmp/bin:$ROOT/bin:$PATH" BERU_TEST_SHELL_STATE=oldshell \
+  "$ROOT/bin/beru-bar" put beru.keyboard-layout --after beru.clock 2>&1) ||
   fail "put falls back against a shell that has not restarted yet" "$put_output"
-[[ $put_output == "omarchy.keyboard-layout is on the bar" ]] || fail "put places without the missing neighbour" "$put_output"
+[[ $put_output == "beru.keyboard-layout is on the bar" ]] || fail "put places without the missing neighbour" "$put_output"
 pass "put falls back against a shell that has not restarted yet"
 
-put_output=$(PATH="$put_tmp/bin:$ROOT/bin:$PATH" OMARCHY_TEST_SHELL_STATE=vanishing \
-  OMARCHY_TEST_SHELL_MARKER="$put_tmp/vanished" \
-  "$ROOT/bin/omarchy-bar" put omarchy.keyboard-layout --after omarchy.clock 2>&1) &&
+put_output=$(PATH="$put_tmp/bin:$ROOT/bin:$PATH" BERU_TEST_SHELL_STATE=vanishing \
+  BERU_TEST_SHELL_MARKER="$put_tmp/vanished" \
+  "$ROOT/bin/beru-bar" put beru.keyboard-layout --after beru.clock 2>&1) &&
   fail "put fails when the shell goes away mid-fallback" "$put_output"
 [[ $put_output == *"did not become ready"* ]] || fail "put remembers the shell answered once" "$put_output"
 pass "put fails when the shell goes away mid-fallback"
 
-put_output=$(PATH="$put_tmp/bin:$ROOT/bin:$PATH" OMARCHY_TEST_SHELL_STATE=unsupported \
-  "$ROOT/bin/omarchy-bar" put omarchy.keyboard-layout --after omarchy.clock 2>&1) &&
+put_output=$(PATH="$put_tmp/bin:$ROOT/bin:$PATH" BERU_TEST_SHELL_STATE=unsupported \
+  "$ROOT/bin/beru-bar" put beru.keyboard-layout --after beru.clock 2>&1) &&
   fail "put fails when the shell cannot answer the call" "$put_output"
 [[ $put_output == *"Function not found"* ]] || fail "put passes on what the shell said" "$put_output"
 pass "put fails when the shell cannot answer the call"
 
-put_output=$(PATH="$put_tmp/bin:$ROOT/bin:$PATH" OMARCHY_TEST_SHELL_STATE=scanning \
-  OMARCHY_TEST_SHELL_MARKER="$put_tmp/scanned" \
-  "$ROOT/bin/omarchy-bar" put omarchy.keyboard-layout --after omarchy.clock 2>&1) ||
+put_output=$(PATH="$put_tmp/bin:$ROOT/bin:$PATH" BERU_TEST_SHELL_STATE=scanning \
+  BERU_TEST_SHELL_MARKER="$put_tmp/scanned" \
+  "$ROOT/bin/beru-bar" put beru.keyboard-layout --after beru.clock 2>&1) ||
   fail "put asks again while the shell is still reading its plugins" "$put_output"
-[[ $put_output == "omarchy.keyboard-layout is on the bar" ]] || fail "put places once the plugins are read" "$put_output"
+[[ $put_output == "beru.keyboard-layout is on the bar" ]] || fail "put places once the plugins are read" "$put_output"
 pass "put asks again while the shell is still reading its plugins"
 
 put_output=$(PATH="$put_tmp/bin:$ROOT/bin:$PATH" \
-  "$ROOT/bin/omarchy-bar" put omarchy.keyboard-layout --after omarchy.clock 2>&1) ||
+  "$ROOT/bin/beru-bar" put beru.keyboard-layout --after beru.clock 2>&1) ||
   fail "put places a widget through a ready shell" "$put_output"
-[[ $put_output == "omarchy.keyboard-layout is on the bar" ]] || fail "put reports the placed widget" "$put_output"
+[[ $put_output == "beru.keyboard-layout is on the bar" ]] || fail "put reports the placed widget" "$put_output"
 pass "put places a widget through a ready shell"

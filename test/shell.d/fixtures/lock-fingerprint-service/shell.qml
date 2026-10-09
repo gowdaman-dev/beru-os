@@ -6,8 +6,8 @@ import qs.Commons
 ShellRoot {
   id: root
 
-  readonly property string rootPath: Quickshell.env("OMARCHY_PATH")
-  readonly property string resultPath: Quickshell.env("OMARCHY_QML_TEST_RESULT")
+  readonly property string rootPath: Quickshell.env("BERU_PATH")
+  readonly property string resultPath: Quickshell.env("BERU_QML_TEST_RESULT")
   property var failures: []
   property int checks: 0
 

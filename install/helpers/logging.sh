@@ -1,26 +1,26 @@
 omarchy_log_to_stdout() {
-  [[ ${OMARCHY_LOG_TO_STDOUT:-} == "1" || -z ${OMARCHY_INSTALL_LOG_FILE:-} ]]
+  [[ ${BERU_LOG_TO_STDOUT:-} == "1" || -z ${BERU_INSTALL_LOG_FILE:-} ]]
 }
 
 omarchy_log_line() {
   if omarchy_log_to_stdout; then
     echo "$1"
   else
-    echo "$1" >>"$OMARCHY_INSTALL_LOG_FILE"
+    echo "$1" >>"$BERU_INSTALL_LOG_FILE"
   fi
 }
 
 start_install_log() {
   if ! omarchy_log_to_stdout; then
-    mkdir -p "$(dirname "$OMARCHY_INSTALL_LOG_FILE")"
-    touch "$OMARCHY_INSTALL_LOG_FILE"
-    chmod 666 "$OMARCHY_INSTALL_LOG_FILE" 2>/dev/null || true
+    mkdir -p "$(dirname "$BERU_INSTALL_LOG_FILE")"
+    touch "$BERU_INSTALL_LOG_FILE"
+    chmod 666 "$BERU_INSTALL_LOG_FILE" 2>/dev/null || true
   fi
 
-  export OMARCHY_START_TIME="${OMARCHY_START_TIME:-$(date '+%Y-%m-%d %H:%M:%S')}"
-  export OMARCHY_START_EPOCH="${OMARCHY_START_EPOCH:-$(date +%s)}"
+  export BERU_START_TIME="${BERU_START_TIME:-$(date '+%Y-%m-%d %H:%M:%S')}"
+  export BERU_START_EPOCH="${BERU_START_EPOCH:-$(date +%s)}"
 
-  omarchy_log_line "=== Omarchy Setup Started: $OMARCHY_START_TIME ==="
+  omarchy_log_line "=== Beru Setup Started: $BERU_START_TIME ==="
 }
 
 stop_install_log() {
@@ -28,13 +28,13 @@ stop_install_log() {
   end_time=$(date '+%Y-%m-%d %H:%M:%S')
   end_epoch=$(date +%s)
 
-  omarchy_log_line "=== Omarchy Setup Completed: $end_time ==="
+  omarchy_log_line "=== Beru Setup Completed: $end_time ==="
 
-  if [[ -n ${OMARCHY_START_EPOCH:-} ]]; then
-    duration=$((end_epoch - OMARCHY_START_EPOCH))
+  if [[ -n ${BERU_START_EPOCH:-} ]]; then
+    duration=$((end_epoch - BERU_START_EPOCH))
     mins=$((duration / 60))
     secs=$((duration % 60))
-    omarchy_log_line "Omarchy setup: ${mins}m ${secs}s"
+    omarchy_log_line "Beru setup: ${mins}m ${secs}s"
   fi
 }
 
@@ -52,7 +52,7 @@ run_logged() {
   esac
 
   local runner=(bash -eE)
-  if [[ ${OMARCHY_INSTALL_DEBUG:-} == "1" ]]; then
+  if [[ ${BERU_INSTALL_DEBUG:-} == "1" ]]; then
     runner=(bash -x -eE)
   fi
 
@@ -61,7 +61,7 @@ run_logged() {
       "${runner[@]}" -c 'source "$1"' bash "$script" </dev/null 2>&1
   else
     PS4='+ ${BASH_SOURCE[0]##*/}:${LINENO}:${FUNCNAME[0]:-main}: ' \
-      "${runner[@]}" -c 'source "$1"' bash "$script" </dev/null >>"$OMARCHY_INSTALL_LOG_FILE" 2>&1
+      "${runner[@]}" -c 'source "$1"' bash "$script" </dev/null >>"$BERU_INSTALL_LOG_FILE" 2>&1
   fi
 
   exit_code=$?

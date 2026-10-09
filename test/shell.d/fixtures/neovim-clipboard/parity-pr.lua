@@ -165,7 +165,7 @@ function M.setup()
   end
 
   vim.g.clipboard = {
-    name = "OmarchyRemoteClipboard",
+    name = "BeruRemoteClipboard",
     copy = { ["+"] = copy("+"), ["*"] = copy("*") },
     paste = { ["+"] = paste("+"), ["*"] = paste("*") },
     cache_enabled = 0,

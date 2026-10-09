@@ -1,0 +1,5 @@
+#!/bin/bash
+
+# beru:summary=Match the Dell XPS 13 DX13260 with an Intel Panther Lake GPU.
+
+beru-hw-match "DX13260" && beru-hw-intel-ptl

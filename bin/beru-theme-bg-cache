@@ -1,0 +1,10 @@
+#!/bin/bash
+
+# beru:summary=Cache background switcher thumbnails for the current theme
+
+theme_name=$(cat "$HOME/.local/state/beru/current/theme.name" 2>/dev/null)
+
+beru-menu-images \
+  --cache-only \
+  "$HOME/.local/state/beru/current/theme/backgrounds" \
+  "$HOME/.config/beru/backgrounds/$theme_name"

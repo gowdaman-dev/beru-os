@@ -1,0 +1,5 @@
+#!/bin/bash
+
+# beru:summary=Toggle the current weather panel
+
+beru-shell shell toggle beru.weather

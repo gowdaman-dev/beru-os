@@ -26,14 +26,14 @@ ShellRoot {
 
   property string home: Quickshell.env("HOME")
 
-  // The omarchy-shell host is the long-running entry point. Plugins live in
-  // sibling directories under plugins/. OMARCHY_PATH is provided by the uwsm
+  // The beru-shell host is the long-running entry point. Plugins live in
+  // sibling directories under plugins/. BERU_PATH is provided by the uwsm
   // session environment and is the single source of truth for this checkout.
-  property string omarchyPath: Quickshell.env("OMARCHY_PATH")
+  property string omarchyPath: Quickshell.env("BERU_PATH")
   readonly property string shellPath: omarchyPath + "/shell"
   readonly property string firstPartyPluginsDir: shellPath + "/plugins"
   readonly property string defaultsPath: omarchyPath + "/config/omarchy/shell.json"
-  readonly property string userConfigPath: home + "/.config/omarchy/shell.json"
+  readonly property string userConfigPath: home + "/.config/beru/shell.json"
 
   // Bundled fallback so the shell can start even when the default shell.json is
   // missing or unreadable. The bar config here mirrors the on-disk defaults
@@ -47,11 +47,11 @@ ShellRoot {
     bar: {
       position: "top",
       transparent: false,
-      centerAnchor: "omarchy.clock",
+      centerAnchor: "beru.clock",
       layout: {
-        left: [{ id: "omarchy.menu" }, { id: "omarchy.workspaces" }],
-        center: [{ id: "omarchy.clock", format: "dddd HH:mm" }],
-        right: [{ id: "omarchy.audio" }]
+        left: [{ id: "beru.menu" }, { id: "beru.workspaces" }],
+        center: [{ id: "beru.clock", format: "dddd HH:mm" }],
+        right: [{ id: "beru.audio" }]
       }
     },
     plugins: []
@@ -147,7 +147,7 @@ ShellRoot {
   }
 
   Component.onCompleted: {
-    console.log("omarchy-shell paths",
+    console.log("beru-shell paths",
       "omarchyPath=" + shell.omarchyPath,
       "shellDir=" + Quickshell.shellDir,
       "firstPartyPluginsDir=" + shell.firstPartyPluginsDir,
@@ -171,7 +171,7 @@ ShellRoot {
 
   // Exposed as a property so child plugins (notifications, future panels)
   // can read barSize/barHidden/position to anchor relative to the active bar.
-  readonly property string defaultBarId: "omarchy.bar"
+  readonly property string defaultBarId: "beru.bar"
   readonly property string selectedBarId: {
     var config = shell.barConfig
     if (Util.isPlainObject(config)) {
@@ -362,7 +362,7 @@ ShellRoot {
 
   function publicIdleConfigFor(manifest) {
     var metadata = manifest && Util.isPlainObject(manifest.omarchy) ? manifest.omarchy : null
-    if (!metadata || String(metadata.clonedFrom || "") !== "omarchy.idle") return ({})
+    if (!metadata || String(metadata.clonedFrom || "") !== "beru.idle") return ({})
     var idle = shell.shellConfig && Util.isPlainObject(shell.shellConfig.idle)
       ? shell.shellConfig.idle : ({})
     return JSON.parse(JSON.stringify(idle))
@@ -372,10 +372,10 @@ ShellRoot {
     var metadata = manifest && Util.isPlainObject(manifest.omarchy) ? manifest.omarchy : null
     var sourceId = metadata ? String(metadata.clonedFrom || "") : ""
     var allowed = {
-      "omarchy.audio": ["omarchy.osd"],
-      "omarchy.media": ["omarchy.osd"],
-      "omarchy.monitor": ["omarchy.osd"],
-      "omarchy.network": ["omarchy.speedtest", "omarchy.wifiqr"]
+      "beru.audio": ["beru.osd"],
+      "beru.media": ["beru.osd"],
+      "beru.monitor": ["beru.osd"],
+      "beru.network": ["beru.speedtest", "beru.wifiqr"]
     }
     var targets = allowed[sourceId] || []
     return targets.indexOf(String(requestedId || "")) !== -1
@@ -456,7 +456,7 @@ ShellRoot {
 
   function pluginFirstPartyServiceFor(cacheKey, pluginId, requestedId) {
     var id = String(requestedId || "")
-    var allowed = ["omarchy.idle", "omarchy.media", "omarchy.nightlight", "omarchy.notifications", "omarchy.remote-session"]
+    var allowed = ["beru.idle", "beru.media", "beru.nightlight", "beru.notifications", "beru.remote-session"]
     if (allowed.indexOf(id) === -1) return null
     var proxyKey = cacheKey + "::" + id
     if (_pluginFirstPartyServiceApis[proxyKey]) return _pluginFirstPartyServiceApis[proxyKey]
@@ -600,7 +600,7 @@ ShellRoot {
     // property, even though the resulting proxy is otherwise acyclic.
     var firstPartyServices = ({})
     if (barCapabilities) {
-      var serviceIds = ["omarchy.idle", "omarchy.media", "omarchy.nightlight", "omarchy.notifications", "omarchy.remote-session"]
+      var serviceIds = ["beru.idle", "beru.media", "beru.nightlight", "beru.notifications", "beru.remote-session"]
       for (var i = 0; i < serviceIds.length; i++) {
         var serviceId = serviceIds[i]
         firstPartyServices[serviceId] = shell.pluginFirstPartyServiceFor(cacheKey, key, serviceId)
@@ -1034,7 +1034,7 @@ ShellRoot {
   }
 
   // keepLoaded services (lock, idle, polkit) must survive plugin hot-reload.
-  // Destroying omarchy.lock drops the ext-session-lock client while Hyprland
+  // Destroying beru.lock drops the ext-session-lock client while Hyprland
   // still holds the lock, which surfaces the crashed-lockscreen fallback.
   function unloadPluginServices() {
     var next = ({})
@@ -1147,7 +1147,7 @@ ShellRoot {
     if (!m || !Array.isArray(m.kinds)) return false
     if (m.kinds.indexOf("bar-widget") === -1) return false
     // Plugins that are also panel/overlay/menu kinds are owned by the
-    // panel loader (e.g. omarchy.menu); let that path handle them.
+    // panel loader (e.g. beru.menu); let that path handle them.
     var loaderKinds = ["panel", "overlay", "menu"]
     for (var i = 0; i < loaderKinds.length; i++) {
       if (m.kinds.indexOf(loaderKinds[i]) !== -1) return false
@@ -1585,11 +1585,11 @@ ShellRoot {
   }
 
   // The IPC targets an ipc shortcut may name, and the service that owns each.
-  readonly property var ipcShortcutServices: ({ media: "omarchy.media", notifications: "omarchy.notifications" })
+  readonly property var ipcShortcutServices: ({ media: "beru.media", notifications: "beru.notifications" })
 
   function runShortcut(entry) {
     if (entry.kind === "menu") {
-      shell.toggle("omarchy.menu", JSON.stringify({ menu: entry.target }))
+      shell.toggle("beru.menu", JSON.stringify({ menu: entry.target }))
     } else if (entry.kind === "ipc") {
       // "media.next" runs the media service's own IPC handler for next.
       var dot = entry.target.indexOf(".")
@@ -1597,14 +1597,14 @@ ShellRoot {
       var method = entry.target.slice(dot + 1)
       var service = shell.serviceFor(shell.ipcShortcutServices[target] || "")
       if (!service || !service.runShortcut(method))
-        Util.execArgv(["omarchy-shell", target, method])
+        Util.execArgv(["beru-shell", target, method])
     } else if (entry.kind === "brightness") {
       if (!shell.brightnessKeys.handle(entry.target))
-        Util.execArgv(["omarchy-brightness-display", entry.target === "raise" ? "+5%" : "5%-"])
+        Util.execArgv(["beru-brightness-display", entry.target === "raise" ? "+5%" : "5%-"])
     } else if (entry.kind === "audio") {
-      var media = shell.serviceFor("omarchy.media")
+      var media = shell.serviceFor("beru.media")
       if (!media || !media.handleVolumeKey(entry.target))
-        Util.execArgv(["omarchy-audio-output-volume", entry.target])
+        Util.execArgv(["beru-audio-output-volume", entry.target])
     } else {
       shell.toggle(entry.target, "{}")
     }
@@ -1632,16 +1632,16 @@ ShellRoot {
 
   // ------------------------------------------------------------ IPC socket
   //
-  // omarchy-shell reaches the shell here first: a qs ipc client costs ~45ms
+  // beru-shell reaches the shell here first: a qs ipc client costs ~45ms
   // to start per call, socat ~5ms. A request is target, method and arguments
   // separated by unit separators and ended by a record separator. The reply is
   // "OK" and the output, or "SKIP" when nothing ran (no such target or
-  // function, or the wrong number of arguments), which omarchy-shell hands to
+  // function, or the wrong number of arguments), which beru-shell hands to
   // qs ipc for its exact answer. The socket sits in XDG_RUNTIME_DIR, private
   // to the user like qs ipc's own. Like qs ipc, it belongs to one shell: the
-  // one running this config on this display. omarchy-shell derives the same
+  // one running this config on this display. beru-shell derives the same
   // name from the same two values.
-  readonly property string ipcSocketPath: Quickshell.env("XDG_RUNTIME_DIR") + "/omarchy-shell-"
+  readonly property string ipcSocketPath: Quickshell.env("XDG_RUNTIME_DIR") + "/beru-shell-"
     + Qt.md5(shell.omarchyPath + "/shell\n" + Quickshell.env("WAYLAND_DISPLAY")).slice(0, 16) + ".sock"
 
   SocketServer {
@@ -1667,7 +1667,7 @@ ShellRoot {
   // --------------------------------------------------- image selector IPC
 
   function imagePickerItem() {
-    var loader = panelLoaders["omarchy.image-picker"]
+    var loader = panelLoaders["beru.image-picker"]
     return loader && loader.item ? loader.item : null
   }
 
@@ -1690,7 +1690,7 @@ ShellRoot {
         showLabels: showLabels,
         filterable: filterable
       })
-      return shell.summon("omarchy.image-picker", payload) ? "ok" : "unknown"
+      return shell.summon("beru.image-picker", payload) ? "ok" : "unknown"
     }
 
     function preload(imageRowsB64: string,
@@ -1710,7 +1710,7 @@ ShellRoot {
       if (picker && typeof picker.closeSelector === "function") {
         picker.closeSelector(doneFile || "")
       } else {
-        shell.hide("omarchy.image-picker")
+        shell.hide("beru.image-picker")
       }
       return "ok"
     }
@@ -1748,7 +1748,7 @@ ShellRoot {
 
     function applyTheme(colorsB64: string, shellB64: string): string {
       if (shell.bootIntro) shell.bootIntro.cancelTheme()
-      var background = shell.firstPartyServiceFor("omarchy.background")
+      var background = shell.firstPartyServiceFor("beru.background")
       if (background && typeof background.setPendingTheme === "function" && typeof background.applyPendingTheme === "function") {
         background.setPendingTheme(colorsB64, shellB64)
         background.applyPendingTheme()

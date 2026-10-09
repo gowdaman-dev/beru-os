@@ -6,10 +6,10 @@ require_command lua
 
 resolved_input_for() {
   local module="$1"
-  OMARCHY_PATH="$ROOT" OMARCHY_MODULE="$module" OMARCHY_VCONSOLE="${2-}" lua <<'LUA'
-package.path = os.getenv("OMARCHY_PATH") .. "/?.lua;" .. package.path
+  BERU_PATH="$ROOT" BERU_MODULE="$module" BERU_VCONSOLE="${2-}" lua <<'LUA'
+package.path = os.getenv("BERU_PATH") .. "/?.lua;" .. package.path
 
-local vconsole = os.getenv("OMARCHY_VCONSOLE")
+local vconsole = os.getenv("BERU_VCONSOLE")
 local real_open = io.open
 
 io.open = function(path, mode)
@@ -17,7 +17,7 @@ io.open = function(path, mode)
     return real_open(path, mode)
   end
 
-  -- An unset OMARCHY_VCONSOLE reaches Lua as "", never nil, so the cases that
+  -- An unset BERU_VCONSOLE reaches Lua as "", never nil, so the cases that
   -- ask for a missing /etc/vconsole.conf need the empty string to fail the open.
   if not vconsole or vconsole == "" then
     return nil
@@ -38,7 +38,7 @@ hl = {
 
 o = { window = function() end }
 
-require(os.getenv("OMARCHY_MODULE"))
+require(os.getenv("BERU_MODULE"))
 LUA
 }
 

@@ -7,8 +7,8 @@ const fs = require('fs')
 const backgroundQml = fs.readFileSync(path.join(root, 'shell/plugins/background/Background.qml'), 'utf8')
 
 assert(
-  /function openThemeSwitcher\(\) \{[\s\S]*if \(!root\.shell \|\| !root\.shell\.summon\("omarchy\.image-picker", payload\)\)\s*Util\.execArgv\(\["omarchy-shell", "shell", "summon", "omarchy\.image-picker", payload\]\)/.test(backgroundQml) &&
-    !backgroundQml.includes('omarchy-theme-switcher'),
+  /function openThemeSwitcher\(\) \{[\s\S]*if \(!root\.shell \|\| !root\.shell\.summon\("beru\.image-picker", payload\)\)\s*Util\.execArgv\(\["beru-shell", "shell", "summon", "beru\.image-picker", payload\]\)/.test(backgroundQml) &&
+    !backgroundQml.includes('beru-theme-switcher'),
   'background opens the in-shell theme picker instead of spawning the switcher script'
 )
 
@@ -20,7 +20,7 @@ assert(
   'background theme transition applies pending colors even if image reveal stalls'
 )
 
-const themeSet = fs.readFileSync(path.join(root, 'bin/omarchy-theme-set'), 'utf8')
+const themeSet = fs.readFileSync(path.join(root, 'bin/beru-theme-set'), 'utf8')
 
 // The next background decodes while the theme stages, rather than after the
 // transition arrives: WebP decodes take as long at screen size as at native.

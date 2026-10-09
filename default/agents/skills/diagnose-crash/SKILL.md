@@ -6,7 +6,7 @@ description: >
   why an application crashed or disappeared, or when a "Process crashed:" desktop
   notification is acted on. Triggers: crash, segfault, SIGSEGV, SIGABRT, core dump,
   coredumpctl, "why did X crash", "X keeps crashing", backtrace symbolization.
-  Covers reporting a confirmed Omarchy bug upstream — see reporting.md.
+  Covers reporting a confirmed Beru bug upstream — see reporting.md.
 ---
 
 # Diagnosing a Crash
@@ -97,9 +97,9 @@ silence notifications for **that one program**, and never run it unprompted. Say
 how to lift it in the same breath, so it is not a one-way door.
 
 ```bash
-omarchy-crash-mute '<program>'        # silence it
-omarchy-crash-mute '<program>' off    # let it speak again
-omarchy-crash-mute                    # list what is muted
+beru-crash-mute '<program>'        # silence it
+beru-crash-mute '<program>' off    # let it speak again
+beru-crash-mute                    # list what is muted
 ```
 
 Pass the `binary:` path from the crash facts, or the `process:` name where no
@@ -120,9 +120,9 @@ None of this fixes anything, and a mute offered in place of a fix that was withi
 reach is the wrong answer. For every program rather than one, the switch is
 _Trigger > Toggle > Crash Capture_.
 
-## If it is an Omarchy bug
+## If it is an Beru bug
 
-Most application crashes are upstream bugs in those applications, not Omarchy's
-doing. In the minority of cases where the cause really does sit within Omarchy's
+Most application crashes are upstream bugs in those applications, not Beru's
+doing. In the minority of cases where the cause really does sit within Beru's
 sphere of control, read [`reporting.md`](reporting.md) before offering to file
 anything.

@@ -1,0 +1,6 @@
+#!/bin/bash
+
+# beru:summary=Overwrite the user config for hyprsunset with the Beru default and restart the service.
+
+beru-refresh-config hypr/hyprsunset.conf
+beru-restart-hyprsunset

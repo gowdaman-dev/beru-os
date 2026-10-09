@@ -1,0 +1,75 @@
+#!/bin/bash
+
+# beru:summary=Apply Beru hardware-specific packages and system configuration
+# beru:group=apply
+# beru:requires-sudo=true
+# beru:examples=beru apply hardware --install-user dhh
+# beru:hidden=true
+
+set -euo pipefail
+
+usage() {
+  cat <<USAGE
+Usage: beru apply hardware --install-user USER
+       beru apply hardware --defer-provisioning
+
+Runs idempotent hardware detection/setup for the installed machine. This is
+called by beru-apply-system during ISO finalization and can be rerun later
+for diagnostics or after hardware/package updates.
+
+--defer-provisioning runs without an install user (deferred-provisioning installs create the user at
+first boot); group grants are recorded in /var/lib/beru/provisioning/groups.
+USAGE
+}
+
+install_user="${BERU_INSTALL_USER:-}"
+defer_provisioning=0
+while (($#)); do
+  case "$1" in
+    --install-user)
+      install_user="${2:-}"
+      shift 2
+      ;;
+    --defer-provisioning)
+      defer_provisioning=1
+      shift
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    *)
+      echo "Unknown option: $1" >&2
+      usage >&2
+      exit 1
+      ;;
+  esac
+done
+
+if (( EUID != 0 )); then
+  echo "Error: beru-apply-hardware must run as root" >&2
+  exit 1
+fi
+
+if (( defer_provisioning )); then
+  install_user=""
+else
+  if [[ -z $install_user || $install_user == "root" ]]; then
+    echo "Error: --install-user must name the target non-root user" >&2
+    exit 1
+  fi
+
+  if ! getent passwd "$install_user" >/dev/null; then
+    echo "Error: user '$install_user' does not exist" >&2
+    exit 1
+  fi
+fi
+
+export BERU_INSTALL_USER="$install_user"
+export BERU_PATH="${BERU_PATH:-/usr/share/beru}"
+export BERU_INSTALL="${BERU_INSTALL:-$BERU_PATH/install}"
+export BERU_INSTALL_LOG_FILE="${BERU_INSTALL_LOG_FILE:-/var/log/beru-install.log}"
+export PATH="$BERU_PATH/bin:$PATH"
+
+source "$BERU_INSTALL/helpers/logging.sh"
+source "$BERU_INSTALL/hardware/all.sh"

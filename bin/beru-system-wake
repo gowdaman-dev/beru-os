@@ -1,0 +1,10 @@
+#!/bin/bash
+
+# beru:summary=Wake displays and restore brightness after idle
+# beru:group=system
+# beru:name=wake
+# beru:examples=beru system wake
+
+beru-brightness-display on
+beru-brightness-keyboard restore
+beru-hyprland-monitor-clamshell >/dev/null 2>&1 || true

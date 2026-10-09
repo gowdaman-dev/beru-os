@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# beru:summary=Toggle single-window square aspect ratio.
+
+case $(beru-hyprland-toggle single-window-aspect-ratio) in
+  on) beru-notification-send -g  "Enable single-window square aspect ratio" ;;
+  off) beru-notification-send -g  "Disable single-window square aspect ratio" ;;
+esac

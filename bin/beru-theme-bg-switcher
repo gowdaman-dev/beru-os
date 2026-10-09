@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# beru:summary=Open the Beru background switcher
+# beru:group=theme
+# beru:name=bg-switcher
+# beru:aliases=beru background
+
+theme_name=$(cat "$HOME/.local/state/beru/current/theme.name" 2>/dev/null)
+current_background=$(readlink -f "$HOME/.local/state/beru/current/background" 2>/dev/null)
+
+beru-menu-images \
+  --selected "$current_background" \
+  "$HOME/.local/state/beru/current/theme/backgrounds" \
+  "$HOME/.config/beru/backgrounds/$theme_name"

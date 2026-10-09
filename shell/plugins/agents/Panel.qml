@@ -8,8 +8,8 @@ import qs.Ui
 
 Panel {
   id: root
-  moduleName: "omarchy.agents"
-  ipcTarget: "omarchy.agents"
+  moduleName: "beru.agents"
+  ipcTarget: "beru.agents"
   manageIpc: false
 
   readonly property color foreground: bar ? bar.foreground : Commons.Color.foreground
@@ -228,7 +228,7 @@ Panel {
   //
   // Adding a subscription happens right here: pick a provider, name it if
   // it's a second account, then sign in through the browser while the panel
-  // follows omarchy-agent-account-add --events. The browser taking focus may
+  // follows beru-agent-account-add --events. The browser taking focus may
   // close the panel; the login carries on, and its result arrives as a
   // notification too.
 
@@ -281,7 +281,7 @@ Panel {
     addNeedsPaste = addProvider === "claude"
     addResult = ""
     addStage = "running"
-    addProcess.command = ["omarchy-agent-account-add", "--events", addProvider].concat(label !== "" ? [label] : [])
+    addProcess.command = ["beru-agent-account-add", "--events", addProvider].concat(label !== "" ? [label] : [])
     addProcess.running = true
   }
 
@@ -334,29 +334,29 @@ Panel {
 
   function reopenSignIn() {
     if (addUrl === "") return
-    Util.execArgv(addPrivate ? ["omarchy-launch-browser", "--private", addUrl] : ["omarchy-launch-browser", addUrl])
+    Util.execArgv(addPrivate ? ["beru-launch-browser", "--private", addUrl] : ["beru-launch-browser", addUrl])
   }
 
-  // A few ways into making Omarchy your own, handed to the default agent.
+  // A few ways into making Beru your own, handed to the default agent.
   readonly property var starterPrompts: [
-    { glyph: "󰏘", label: "Theme", prompt: "Make me a new Omarchy theme. Ask me what look or inspiration I have in mind, then build it following the Omarchy skill's theming guide and switch to it." },
-    { glyph: "󰐱", label: "Plugin", prompt: "Make me a new Omarchy shell plugin. Ask me what I'd like it to do, then build it following the Omarchy skill's plugin guide and enable it." },
-    { glyph: "󰣆", label: "App", prompt: "Make me a new app for my Omarchy desktop. Ask me what it should do, then build it following the omarchy-app skill and install it so it shows up in the app launcher." }
+    { glyph: "󰏘", label: "Theme", prompt: "Make me a new Beru theme. Ask me what look or inspiration I have in mind, then build it following the Beru skill's theming guide and switch to it." },
+    { glyph: "󰐱", label: "Plugin", prompt: "Make me a new Beru shell plugin. Ask me what I'd like it to do, then build it following the Beru skill's plugin guide and enable it." },
+    { glyph: "󰣆", label: "App", prompt: "Make me a new app for my Beru desktop. Ask me what it should do, then build it following the beru-app skill and install it so it shows up in the app launcher." }
   ]
 
   function startPrompt(prompt) {
     root.close()
-    Util.execArgv(["omarchy-agent-prompt", prompt])
+    Util.execArgv(["beru-agent-prompt", prompt])
   }
 
   function renameAccount(p, account, label) {
     if (!p || !account) return
-    Util.execArgv(["omarchy-agent-account-rename", p.providerId, String(account.id), label])
+    Util.execArgv(["beru-agent-account-rename", p.providerId, String(account.id), label])
   }
 
   function useAccount(p, account) {
     if (!p || !account || account.active) return
-    Util.execArgv(["omarchy-agent-account-use", p.providerId, String(account.id)])
+    Util.execArgv(["beru-agent-account-use", p.providerId, String(account.id)])
   }
 
   function autoSwitchFor(p) {
@@ -369,8 +369,8 @@ Panel {
 
   function setSwitchMode(p, mode) {
     if (!p || providerAccounts(p).length < 2 || mode === (autoSwitchFor(p) ? "auto" : "manual")) return
-    Util.execArgv(["bash", "-c", 'omarchy-agent-account-mode "$1" "$2" >/dev/null && omarchy-agent-usage-update --limits-only "$1"',
-                   "omarchy-agent-account-mode", p.providerId, mode])
+    Util.execArgv(["bash", "-c", 'beru-agent-account-mode "$1" "$2" >/dev/null && beru-agent-usage-update --limits-only "$1"',
+                   "beru-agent-account-mode", p.providerId, mode])
   }
 
   // `m` flips autoswitch for the picked account's provider, or the first
@@ -442,7 +442,7 @@ Panel {
     addNeedsPaste = addProvider === "claude"
     addResult = ""
     addStage = "running"
-    addProcess.command = ["omarchy-agent-account-add", "--events", "--reauth",
+    addProcess.command = ["beru-agent-account-add", "--events", "--reauth",
       account && account.primary !== true ? String(account.id) : ":primary", p.providerId]
     addProcess.running = true
   }
@@ -462,7 +462,7 @@ Panel {
   }
 
   function launchAgent() {
-    if (root.bar) root.bar.run("omarchy-agent --pick")
+    if (root.bar) root.bar.run("beru-agent --pick")
     root.close()
   }
 
@@ -785,7 +785,7 @@ Panel {
   Process {
     id: checkProcess
     running: false
-    command: ["omarchy-agent-account-add", "--check"]
+    command: ["beru-agent-account-add", "--check"]
     stdout: SplitParser {
       onRead: function(line) {
         var parts = String(line).trim().split(" ")

@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# beru:summary=Returns true when clamshell mode is active
+# beru:hidden=true
+
+# Clamshell = lid closed while driving one or more external monitors.
+beru-hw-laptop-closed && beru-hw-external-monitors

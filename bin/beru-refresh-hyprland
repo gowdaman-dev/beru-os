@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# beru:summary=Overwrite all the user Hyprland Lua configs in ~/.config/hypr with the Beru defaults.
+
+beru-refresh-config hypr/.luarc.json
+beru-refresh-config hypr/autostart.lua
+beru-refresh-config hypr/bindings.lua
+beru-refresh-config hypr/input.lua
+beru-refresh-config hypr/looknfeel.lua
+beru-refresh-config hypr/hyprland.lua
+beru-refresh-config hypr/monitors.lua
+
+mkdir -p ~/.local/state/beru/toggles/hypr
+cp "$BERU_PATH/default/hypr/toggles/flags.lua" ~/.local/state/beru/toggles/hypr/

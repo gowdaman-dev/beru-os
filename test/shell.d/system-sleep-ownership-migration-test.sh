@@ -8,7 +8,7 @@ migration="$ROOT/migrations/1788662350.sh"
 test_tmp=$(mktemp -d -p /tmp)
 trap 'rm -rf "$test_tmp"' EXIT
 
-mock_omarchy="$test_tmp/omarchy"
+mock_omarchy="$test_tmp/beru"
 sleep_dir="$test_tmp/system-sleep"
 systemd_dir="$test_tmp/systemd"
 drop_in="$systemd_dir/supergfxd.service.d/delay-start.conf"
@@ -36,8 +36,8 @@ cp "$ROOT/default/systemd/system/supergfxd.service.d/delay-start.conf" \
 sed \
   -e "s|system_sleep_dir=/usr/lib/systemd/system-sleep|system_sleep_dir=$sleep_dir|" \
   -e "s|supergfxd_drop_in=/etc/systemd/system/supergfxd.service.d/delay-start.conf|supergfxd_drop_in=$drop_in|" \
-  -e "s|quarantine_root=/var/lib/omarchy/migrations/1788662350-system-sleep|quarantine_root=$quarantine|" \
-  -e "s|/var/lib/omarchy/migrations/1788662350-systemd-reload-needed|$reload_needed_marker|" \
+  -e "s|quarantine_root=/var/lib/beru/migrations/1788662350-system-sleep|quarantine_root=$quarantine|" \
+  -e "s|/var/lib/beru/migrations/1788662350-systemd-reload-needed|$reload_needed_marker|" \
   -e "s|/usr/bin/stat|$stub_bin/stat|g" \
   -e "s|/usr/bin/readlink|$stub_bin/readlink|g" \
   "$migration" >"$migration_copy"
@@ -157,7 +157,7 @@ run_migration() {
     FAKE_ROOT_GID="${FAKE_ROOT_GID:-0}" \
     INACCESSIBLE_AS_USER="${INACCESSIBLE_AS_USER:-}" \
     SYSTEMCTL_FAIL_ONCE_FILE="${SYSTEMCTL_FAIL_ONCE_FILE:-}" \
-    OMARCHY_PATH="$mock_omarchy" \
+    BERU_PATH="$mock_omarchy" \
     PATH="$stub_bin:$PATH" bash -euo pipefail "$migration_copy" >/dev/null
 }
 
@@ -521,7 +521,7 @@ sed \
   -e "s|/usr/bin/supergfxctl|$stub_bin/hook-supergfxctl|g" \
   -e "s|/usr/bin/install|$stub_bin/hook-install|g" \
   -e "s|/etc/supergfxd.conf|$hook_config|g" \
-  -e "s|/run/omarchy-force-igpu-integrated|$hook_marker|g" \
+  -e "s|/run/beru-force-igpu-integrated|$hook_marker|g" \
   "$ROOT/default/systemd/system-sleep/force-igpu" >"$hook_copy"
 cat >"$stub_bin/hook-supergfxctl" <<'SH'
 #!/bin/bash

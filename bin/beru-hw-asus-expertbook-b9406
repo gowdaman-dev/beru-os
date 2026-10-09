@@ -1,0 +1,5 @@
+#!/bin/bash
+
+# beru:summary=Detect ASUS ExpertBook B9406 series laptops on Intel Panther Lake.
+
+beru-hw-match "B9406" && beru-hw-intel-ptl

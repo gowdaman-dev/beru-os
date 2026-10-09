@@ -1,0 +1,11 @@
+[Trigger]
+Operation = Upgrade
+Type = Package
+Target = *
+
+[Action]
+Description = Checking Beru update entrypoint...
+When = PreTransaction
+Depends = omarchy
+Exec = /usr/bin/beru-update-pacman-guard
+AbortOnFail

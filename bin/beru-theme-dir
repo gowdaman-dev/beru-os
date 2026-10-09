@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# beru:summary=Print the directory holding a theme, preferring a user-installed copy
+# beru:args=<theme-name>
+# beru:examples=beru theme dir tokyo-night
+
+theme="${1:-}"
+
+if [[ -z $theme ]]; then
+  echo "Usage: beru-theme-dir <theme-name>" >&2
+  exit 1
+fi
+
+if [[ -d $HOME/.config/beru/themes/$theme ]]; then
+  echo "$HOME/.config/beru/themes/$theme"
+else
+  echo "$BERU_PATH/themes/$theme"
+fi

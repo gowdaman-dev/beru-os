@@ -37,7 +37,7 @@ resolved_hooks() {
   # The vconsole block sources the host's /etc/vconsole.conf, which may set
   # only KEYMAP; predefine XKBLAYOUT so its expansion survives set -u and the
   # test stays independent of the machine it runs on.
-  OMARCHY_PCI_DEVICES_PATH="$tmp_dir/devices" bash -uc "
+  BERU_PCI_DEVICES_PATH="$tmp_dir/devices" bash -uc "
     FILES=()
     XKBLAYOUT=us
     $modules_decl

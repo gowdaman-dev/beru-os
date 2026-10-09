@@ -1,3 +1,3 @@
-if omarchy-hw-surface; then
-  omarchy-pkg-add linux-firmware-marvell
+if beru-hw-surface; then
+  beru-pkg-add linux-firmware-marvell
 fi

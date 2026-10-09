@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# beru:summary=Apply the current theme keyboard color to supported keyboards
+# beru:hidden=true
+
+beru-theme-set-keyboard-asus-rog
+beru-theme-set-keyboard-f16

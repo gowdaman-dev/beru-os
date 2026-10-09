@@ -10,7 +10,7 @@ import "EmojiSearch.js" as EmojiSearch
 Item {
   id: root
 
-  property string omarchyPath: Quickshell.env("OMARCHY_PATH")
+  property string omarchyPath: Quickshell.env("BERU_PATH")
   property var shell: null
   property var manifest: null
 
@@ -59,7 +59,7 @@ Item {
   function dismiss() {
     root.opened = false
     if (root.shell && typeof root.shell.hide === "function")
-      root.shell.hide((root.manifest && root.manifest.id) || "omarchy.emojis")
+      root.shell.hide((root.manifest && root.manifest.id) || "beru.emojis")
   }
 
   function toggle() {
@@ -149,7 +149,7 @@ Item {
   function applySelected(emoji) {
     if (!emoji) return
     root.dismiss()
-    Quickshell.execDetached([root.omarchyPath + "/bin/omarchy-menu-emoji-insert", emoji])
+    Quickshell.execDetached([root.omarchyPath + "/bin/beru-menu-emoji-insert", emoji])
   }
 
   ListModel { id: displayModel }
@@ -161,7 +161,7 @@ Item {
   OverlayWindow {
     id: panel
     shown: root.opened
-    WlrLayershell.namespace: "omarchy-emojis"
+    WlrLayershell.namespace: "beru-emojis"
 
     Rectangle {
       anchors.fill: parent

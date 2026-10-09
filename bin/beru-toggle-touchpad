@@ -1,0 +1,6 @@
+#!/bin/bash
+
+# beru:summary=Enable, disable, or toggle the touchpad
+# beru:args=[on|off|toggle]
+
+exec beru-toggle-input-device touchpad "${1:-toggle}"

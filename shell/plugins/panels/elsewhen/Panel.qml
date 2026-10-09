@@ -13,8 +13,8 @@ import "GlobeModel.js" as Solar
 // minutes to catch DST.
 Panel {
   id: root
-  moduleName: "omarchy.elsewhen"
-  ipcTarget: "omarchy.elsewhen"
+  moduleName: "beru.elsewhen"
+  ipcTarget: "beru.elsewhen"
   manageIpc: false
 
 

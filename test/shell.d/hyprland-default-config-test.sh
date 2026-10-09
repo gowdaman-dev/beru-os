@@ -8,10 +8,10 @@ run_application_bindings() {
   local home="$1"
   local prelude="${2:-}"
 
-  HOME="$home" XDG_CONFIG_HOME="$home/.config" XDG_STATE_HOME="$home/.local/state" OMARCHY_PATH="$ROOT" OMARCHY_BINDING_PRELUDE="$prelude" lua <<'LUA'
-package.path = os.getenv("HOME") .. "/.config/?.lua;" .. os.getenv("OMARCHY_PATH") .. "/?.lua;" .. package.path
+  HOME="$home" XDG_CONFIG_HOME="$home/.config" XDG_STATE_HOME="$home/.local/state" BERU_PATH="$ROOT" BERU_BINDING_PRELUDE="$prelude" lua <<'LUA'
+package.path = os.getenv("HOME") .. "/.config/?.lua;" .. os.getenv("BERU_PATH") .. "/?.lua;" .. package.path
 
-local prelude = os.getenv("OMARCHY_BINDING_PRELUDE") or ""
+local prelude = os.getenv("BERU_BINDING_PRELUDE") or ""
 if prelude ~= "" then
   assert(load(prelude))()
 end
@@ -39,8 +39,8 @@ run_omarchy_bindings() {
   local home="$1"
   local prelude="${2:-}"
 
-  HOME="$home" XDG_CONFIG_HOME="$home/.config" XDG_STATE_HOME="$home/.local/state" OMARCHY_PATH="$ROOT" OMARCHY_BINDING_PRELUDE="$prelude" lua <<'LUA'
-package.path = os.getenv("HOME") .. "/.config/?.lua;" .. os.getenv("OMARCHY_PATH") .. "/?.lua;" .. package.path
+  HOME="$home" XDG_CONFIG_HOME="$home/.config" XDG_STATE_HOME="$home/.local/state" BERU_PATH="$ROOT" BERU_BINDING_PRELUDE="$prelude" lua <<'LUA'
+package.path = os.getenv("HOME") .. "/.config/?.lua;" .. os.getenv("BERU_PATH") .. "/?.lua;" .. package.path
 
 local function proxy()
   return setmetatable({}, {
@@ -55,7 +55,7 @@ local function proxy()
   })
 end
 
-local prelude = os.getenv("OMARCHY_BINDING_PRELUDE") or ""
+local prelude = os.getenv("BERU_BINDING_PRELUDE") or ""
 if prelude ~= "" then
   assert(load(prelude))()
 end
@@ -91,7 +91,7 @@ hl = setmetatable({
   end,
 })
 
-require("default.hypr.omarchy")
+require("default.hypr.beru")
 LUA
 }
 
@@ -120,8 +120,8 @@ fi
 pass "universal clipboard shortcuts avoid virtual keyboard modifier merging"
 
 removed_home="$tmpdir/removed-home"
-mkdir -p "$removed_home/.local/state/omarchy"
-touch "$removed_home/.local/state/omarchy/preinstalls-removed"
+mkdir -p "$removed_home/.local/state/beru"
+touch "$removed_home/.local/state/beru/preinstalls-removed"
 removed_output=$(run_application_bindings "$removed_home")
 grep -Fq $'SUPER + RETURN	Terminal' <<<"$removed_output" || fail "preinstall removal keeps essential bindings"
 if grep -Fq $'SUPER + SHIFT + A	ChatGPT' <<<"$removed_output"; then
@@ -141,8 +141,8 @@ pass "preinstalled binding variable skips optional application bindings"
 no_bindings_home="$tmpdir/no-bindings-home"
 mkdir -p "$no_bindings_home"
 no_bindings_output=$(run_omarchy_bindings "$no_bindings_home" 'omarchy_default_bindings = false')
-[[ -z $no_bindings_output ]] || fail "default binding variable disables all Omarchy bindings" "$no_bindings_output"
-pass "default binding variable disables all Omarchy bindings"
+[[ -z $no_bindings_output ]] || fail "default binding variable disables all Beru bindings" "$no_bindings_output"
+pass "default binding variable disables all Beru bindings"
 
 dictation_home="$tmpdir/dictation-home"
 missing_bin="$tmpdir/missing-bin"
@@ -152,11 +152,11 @@ ln -s "$(command -v lspci)" "$missing_bin/lspci"
 ln -s "$(command -v sort)" "$missing_bin/sort"
 dictation_output=$(PATH="$missing_bin" run_omarchy_bindings "$dictation_home")
 if grep -Fq 'dictation' <<<"$dictation_output"; then fail "unconfigured dictation leaves application shortcuts available"; fi
-cat > "$missing_bin/omarchy-default-dictation" <<'SH'
+cat > "$missing_bin/beru-default-dictation" <<'SH'
 #!/bin/bash
 echo future-backend
 SH
-chmod +x "$missing_bin/omarchy-default-dictation"
+chmod +x "$missing_bin/beru-default-dictation"
 dictation_output=$(PATH="$missing_bin" run_omarchy_bindings "$dictation_home")
 for binding in \
   $'SUPER + CTRL + X\tToggle dictation' \
@@ -225,23 +225,23 @@ require("default.hypr.bindings.clipboard")
 require("default.hypr.bindings.tiling")
 require("default.hypr.bindings.utilities")
 
--- Application bindings without Omarchy's preinstalled web apps, TUIs, or desktop apps.
-o.bind("SUPER + RETURN", "Terminal", { omarchy = "terminal" })
-o.bind("SUPER + SHIFT + RETURN", "Browser", { omarchy = "browser" })
-o.bind("SUPER + SHIFT + F", "File manager", { omarchy = "nautilus" })
-o.bind("SUPER + ALT + SHIFT + F", "File manager (cwd)", { omarchy = "nautilus-cwd" })
-o.bind("SUPER + SHIFT + B", "Browser", { omarchy = "browser" })
-o.bind("SUPER + SHIFT + ALT + B", "Browser (private)", { omarchy = "browser --private" })
-o.bind("SUPER + SHIFT + N", "Editor", { omarchy = "editor" })
+-- Application bindings without Beru's preinstalled web apps, TUIs, or desktop apps.
+o.bind("SUPER + RETURN", "Terminal", { beru = "terminal" })
+o.bind("SUPER + SHIFT + RETURN", "Browser", { beru = "browser" })
+o.bind("SUPER + SHIFT + F", "File manager", { beru = "nautilus" })
+o.bind("SUPER + ALT + SHIFT + F", "File manager (cwd)", { beru = "nautilus-cwd" })
+o.bind("SUPER + SHIFT + B", "Browser", { beru = "browser" })
+o.bind("SUPER + SHIFT + ALT + B", "Browser (private)", { beru = "browser --private" })
+o.bind("SUPER + SHIFT + N", "Editor", { beru = "editor" })
 LUA
-HOME="$migration_home" OMARCHY_PATH="$ROOT" bash -euo pipefail "$migration" >/dev/null
+HOME="$migration_home" BERU_PATH="$ROOT" bash -euo pipefail "$migration" >/dev/null
 cmp -s "$ROOT/config/hypr/bindings.lua" "$migration_home/.config/hypr/bindings.lua" ||
   fail "plain legacy bindings migrate to the user override stub"
-[[ -f $migration_home/.local/state/omarchy/preinstalls-removed ]] ||
+[[ -f $migration_home/.local/state/beru/preinstalls-removed ]] ||
   fail "plain legacy bindings preserve preinstall removal state"
 pass "migration converts plain legacy bindings to package-owned defaults"
 
-upgrade_script="$ROOT/bin/omarchy-upgrade-to-quattro"
+upgrade_script="$ROOT/bin/beru-upgrade-to-quattro"
 grep -Fq 'touch "$state_dir/preinstalls-removed"' "$upgrade_script" ||
   fail "upgrade-to-quattro preserves preinstall removal state"
 

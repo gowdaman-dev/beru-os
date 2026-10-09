@@ -1,3 +1,3 @@
-if omarchy-hw-framework16; then
-  omarchy-pkg-add qmk-hid
+if beru-hw-framework16; then
+  beru-pkg-add qmk-hid
 fi

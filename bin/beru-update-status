@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# beru:summary=Refresh the shell update status
+# beru:hidden=true
+
+set -e
+
+if beru-update-available >/dev/null; then
+  beru-shell -q beru.system-update refresh
+else
+  beru-shell -q beru.system-update clear
+fi

@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# beru:summary=Reset shell.json to Beru defaults
+# beru:examples=beru refresh shell
+
+set -euo pipefail
+
+beru-refresh-config beru/shell.json
+beru-bar defaults
+
+beru-restart-shell

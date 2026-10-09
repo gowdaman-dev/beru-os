@@ -1,0 +1,6 @@
+#!/bin/bash
+# beru:summary=Launch emojis
+# beru:group=menu
+# beru:examples=beru menu emoji
+
+beru-shell shell toggle beru.emojis

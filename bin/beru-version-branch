@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# beru:summary=Print the active Beru dev-link git branch
+# beru:hidden=true
+
+omarchy_path=${BERU_PATH:-/usr/share/beru}
+omarchy_path=${omarchy_path%/}
+
+[[ $omarchy_path != "/usr/share/beru" ]] || exit 1
+
+branch=$(git -C "$omarchy_path" branch --show-current 2>/dev/null || true)
+if [[ -z $branch ]]; then
+  hash=$(git -C "$omarchy_path" rev-parse --short HEAD 2>/dev/null || true)
+  [[ -n $hash ]] || exit 1
+  branch="detached@$hash"
+fi
+
+echo "$branch"

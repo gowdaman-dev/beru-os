@@ -33,15 +33,15 @@ cat >"$stub_bin/pacman" <<'SH'
 #!/bin/bash
 case "$1" in
   -Qq)
-    case "${TEST_INSTALLED_PACKAGE:-omarchy}" in
-      omarchy)
-        [[ $2 == "omarchy" ]]; exit $?
+    case "${TEST_INSTALLED_PACKAGE:-beru}" in
+      beru)
+        [[ $2 == "beru" ]]; exit $?
         ;;
-      omarchy-dev)
-        [[ $2 == "omarchy-dev" ]]; exit $?
+      beru-dev)
+        [[ $2 == "beru-dev" ]]; exit $?
         ;;
       both)
-        [[ $2 == "omarchy" || $2 == "omarchy-dev" ]]; exit $?
+        [[ $2 == "beru" || $2 == "beru-dev" ]]; exit $?
         ;;
       none)
         exit 1
@@ -91,10 +91,10 @@ SH
 chmod +x "$stub_bin/git"
 
 run_checker() {
-  OMARCHY_PATH="${TEST_OMARCHY_PATH:-/usr/share/omarchy}" \
+  BERU_PATH="${TEST_OMARCHY_PATH:-/usr/share/beru}" \
     TEST_GIT_LOG="$git_log" \
     PATH="$stub_bin:$PATH" \
-    "$ROOT/bin/omarchy-update-available"
+    "$ROOT/bin/beru-update-available"
 }
 
 capture_checker() {
@@ -115,56 +115,56 @@ capture_checker() {
 stdout="$test_tmp/stdout"
 stderr="$test_tmp/stderr"
 
-if capture_checker "$stdout" "$stderr" TEST_CHECKUPDATES=updates TEST_INSTALLED_PACKAGE=omarchy; then
+if capture_checker "$stdout" "$stderr" TEST_CHECKUPDATES=updates TEST_INSTALLED_PACKAGE=beru; then
   status=0
 else
   status=$?
 fi
-[[ $status -eq 0 ]] || fail "update checker exits successfully when omarchy update is available"
-grep -q '^omarchy ' "$stdout" || fail "update checker prints omarchy updates"
-! grep -q '^omarchy-settings ' "$stdout" || fail "update checker ignores omarchy-settings updates"
-! grep -q '^linux ' "$stdout" || fail "update checker ignores non-Omarchy package updates"
-! grep -q '^omarchy-dev ' "$stdout" || fail "update checker ignores omarchy-dev when omarchy is installed"
-pass "update checker detects installed omarchy package updates"
+[[ $status -eq 0 ]] || fail "update checker exits successfully when beru update is available"
+grep -q '^beru ' "$stdout" || fail "update checker prints beru updates"
+! grep -q '^beru-settings ' "$stdout" || fail "update checker ignores beru-settings updates"
+! grep -q '^linux ' "$stdout" || fail "update checker ignores non-Beru package updates"
+! grep -q '^beru-dev ' "$stdout" || fail "update checker ignores beru-dev when beru is installed"
+pass "update checker detects installed beru package updates"
 
-if capture_checker "$stdout" "$stderr" TEST_CHECKUPDATES=updates TEST_INSTALLED_PACKAGE=omarchy-dev; then
+if capture_checker "$stdout" "$stderr" TEST_CHECKUPDATES=updates TEST_INSTALLED_PACKAGE=beru-dev; then
   status=0
 else
   status=$?
 fi
-[[ $status -eq 0 ]] || fail "update checker exits successfully when omarchy-dev update is available"
-grep -q '^omarchy-dev ' "$stdout" || fail "update checker prints omarchy-dev updates"
-! grep -q '^omarchy-settings-dev ' "$stdout" || fail "update checker ignores omarchy-settings-dev updates"
-! grep -q '^omarchy ' "$stdout" || fail "update checker ignores omarchy when omarchy-dev is installed"
-pass "update checker detects installed omarchy-dev package updates"
+[[ $status -eq 0 ]] || fail "update checker exits successfully when beru-dev update is available"
+grep -q '^beru-dev ' "$stdout" || fail "update checker prints beru-dev updates"
+! grep -q '^beru-settings-dev ' "$stdout" || fail "update checker ignores beru-settings-dev updates"
+! grep -q '^beru ' "$stdout" || fail "update checker ignores beru when beru-dev is installed"
+pass "update checker detects installed beru-dev package updates"
 
 if capture_checker "$stdout" "$stderr" TEST_CHECKUPDATES=updates TEST_INSTALLED_PACKAGE=both; then
   status=0
 else
   status=$?
 fi
-[[ $status -eq 0 ]] || fail "update checker prefers omarchy-dev when both packages are installed"
-grep -q '^omarchy-dev ' "$stdout" || fail "update checker prints omarchy-dev when both packages are installed"
-! grep -q '^omarchy ' "$stdout" || fail "update checker ignores omarchy when omarchy-dev is installed"
-pass "update checker prefers omarchy-dev over omarchy"
+[[ $status -eq 0 ]] || fail "update checker prefers beru-dev when both packages are installed"
+grep -q '^beru-dev ' "$stdout" || fail "update checker prints beru-dev when both packages are installed"
+! grep -q '^beru ' "$stdout" || fail "update checker ignores beru when beru-dev is installed"
+pass "update checker prefers beru-dev over beru"
 
 if capture_checker "$stdout" "$stderr" TEST_CHECKUPDATES=updates TEST_INSTALLED_PACKAGE=none; then
   status=0
 else
   status=$?
 fi
-[[ $status -eq 1 ]] || fail "update checker exits non-zero when no Omarchy package is installed"
-[[ ! -s $stderr ]] || fail "update checker is quiet when no Omarchy package is installed"
-pass "update checker ignores systems without omarchy or omarchy-dev installed"
+[[ $status -eq 1 ]] || fail "update checker exits non-zero when no Beru package is installed"
+[[ ! -s $stderr ]] || fail "update checker is quiet when no Beru package is installed"
+pass "update checker ignores systems without beru or beru-dev installed"
 
-if capture_checker "$stdout" "$stderr" TEST_CHECKUPDATES=none TEST_INSTALLED_PACKAGE=omarchy; then
+if capture_checker "$stdout" "$stderr" TEST_CHECKUPDATES=none TEST_INSTALLED_PACKAGE=beru; then
   status=0
 else
   status=$?
 fi
 [[ $status -eq 1 ]] || fail "update checker exits non-zero when no updates are available"
-grep -q '^Omarchy is up to date$' "$stdout" || fail "update checker prints up-to-date message"
-pass "update checker reports up-to-date Omarchy packages"
+grep -q '^Beru is up to date$' "$stdout" || fail "update checker prints up-to-date message"
+pass "update checker reports up-to-date Beru packages"
 
 : >"$git_log"
 if capture_checker "$stdout" "$stderr" \
@@ -177,7 +177,7 @@ else
   status=$?
 fi
 [[ $status -eq 0 ]] || fail "update checker exits successfully when dev commits are available"
-grep -Fx 'omarchy-dev-checkout 2 new commits on origin/quattro' "$stdout" >/dev/null ||
+grep -Fx 'beru-dev-checkout 2 new commits on origin/quattro' "$stdout" >/dev/null ||
   fail "update checker reports available dev commits" "$(cat "$stdout")"
 grep -Fx -- "-C $test_tmp/checkout fetch --quiet" "$git_log" >/dev/null ||
   fail "update checker fetches the dev checkout upstream" "$(cat "$git_log")"
@@ -193,7 +193,7 @@ else
   status=$?
 fi
 [[ $status -eq 1 ]] || fail "update checker exits non-zero when the dev checkout is current"
-grep -q '^Omarchy is up to date$' "$stdout" || fail "update checker reports a current dev checkout"
+grep -q '^Beru is up to date$' "$stdout" || fail "update checker reports a current dev checkout"
 pass "update checker ignores a current dev checkout"
 
 if capture_checker "$stdout" "$stderr" \
@@ -207,7 +207,7 @@ else
   status=$?
 fi
 [[ $status -eq 0 ]] || fail "update checker uses cached upstream state when fetch fails"
-grep -Fx 'omarchy-dev-checkout 1 new commit on origin/quattro' "$stdout" >/dev/null ||
+grep -Fx 'beru-dev-checkout 1 new commit on origin/quattro' "$stdout" >/dev/null ||
   fail "update checker reports cached dev commits after a fetch failure" "$(cat "$stdout")"
 [[ ! -s $stderr ]] || fail "update checker keeps dev fetch failures quiet" "$(cat "$stderr")"
 pass "update checker uses cached dev state when fetching is unavailable"
