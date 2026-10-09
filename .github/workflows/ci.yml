@@ -1,0 +1,31 @@
+name: Beru OS CI & Verification
+
+on:
+  push:
+    branches:
+      - quattro
+      - dev
+  pull_request:
+    branches:
+      - quattro
+
+jobs:
+  test-cli-and-metadata:
+    name: CLI Router & Command Metadata Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Tools & Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jq bash coreutils
+
+      - name: Run CLI Tests
+        run: |
+          ./test/cli
+
+      - name: Check Command Metadata
+        run: |
+          ./bin/beru commands --check

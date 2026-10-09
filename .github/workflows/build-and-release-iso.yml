@@ -1,0 +1,134 @@
+name: Build and Release Beru OS Live ISO
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: 'Release Tag (e.g. v1.0.0 or leave empty for nightly/automated tag)'
+        required: false
+        default: ''
+      is_prerelease:
+        description: 'Mark as Pre-release'
+        type: boolean
+        default: false
+      is_draft:
+        description: 'Create as Draft Release'
+        type: boolean
+        default: false
+  push:
+    tags:
+      - 'v*'
+    branches:
+      - quattro
+    paths:
+      - 'archiso/**'
+      - 'bin/**'
+      - 'shell/**'
+      - 'default/**'
+      - 'install/**'
+      - 'scripts/build-iso.sh'
+      - '.github/workflows/build-and-release-iso.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    name: Build Live ISO & Publish Release
+    runs-on: ubuntu-latest
+    container:
+      image: archlinux:latest
+      options: --privileged
+
+    steps:
+      - name: Install Build Prerequisites
+        run: |
+          pacman -Syu --noconfirm
+          pacman -S --noconfirm --needed \
+            archiso \
+            git \
+            bash \
+            coreutils \
+            squashfs-tools \
+            zstd \
+            libisoburn \
+            rsync \
+            jq \
+            curl \
+            openssh
+
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Build Bootable Live ISO via mkarchiso
+        run: |
+          chmod +x scripts/build-iso.sh
+          ./scripts/build-iso.sh
+
+      - name: Determine Version & Release Tag
+        id: release_meta
+        run: |
+          BUILD_DATE=$(date +'%Y.%m.%d')
+          if [ -n "${{ github.event.inputs.release_tag }}" ]; then
+            TAG_NAME="${{ github.event.inputs.release_tag }}"
+          elif [[ "${{ github.ref }}" == refs/tags/* ]]; then
+            TAG_NAME="${GITHUB_REF#refs/tags/}"
+          else
+            TAG_NAME="v${BUILD_DATE}-${GITHUB_SHA::7}"
+          fi
+          echo "tag_name=${TAG_NAME}" >> "$GITHUB_OUTPUT"
+          echo "build_date=${BUILD_DATE}" >> "$GITHUB_OUTPUT"
+
+      - name: Prepare Release Notes & Checksum Manifest
+        id: notes
+        run: |
+          cd out
+          ISO_FILE=$(ls beru-os-*.iso | head -n 1)
+          SHA256=$(cat "${ISO_FILE}.sha256" | awk '{print $1}')
+          
+          cat <<EOF > release_notes.md
+          # Beru OS Live ISO Release (${{ steps.release_meta.outputs.tag_name }})
+
+          **Beru OS** — Autonomous AI-Native Wayland Desktop Operating System.
+
+          ---
+
+          ### 📦 Download Assets & Integrity
+          | File | SHA256 Checksum |
+          | :--- | :--- |
+          | \`${ISO_FILE}\` | \`${SHA256}\` |
+
+          ---
+
+          ### 🚀 Quick Start & Installation
+          1. **Flash to USB** (using \`dd\`, Ventoy, or BalenaEtcher):
+             \`\`\`bash
+             sudo dd bs=4M if=${ISO_FILE} of=/dev/sdX status=progress oflag=sync
+             \`\`\`
+          2. **Boot in UEFI Mode** with Secure Boot disabled.
+          3. Launch the automated installer or test the live environment directly!
+          EOF
+
+      - name: Upload ISO Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: beru-os-live-iso-${{ steps.release_meta.outputs.tag_name }}
+          path: out/
+          retention-days: 14
+
+      - name: Create GitHub Release & Upload ISO Assets
+        if: startsWith(github.ref, 'refs/tags/') || github.event.inputs.release_tag != '' || github.event_name == 'workflow_dispatch'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.release_meta.outputs.tag_name }}
+          name: "Beru OS ${{ steps.release_meta.outputs.tag_name }}"
+          body_path: out/release_notes.md
+          draft: ${{ github.event.inputs.is_draft || false }}
+          prerelease: ${{ github.event.inputs.is_prerelease || false }}
+          files: |
+            out/beru-os-*.iso
+            out/beru-os-*.iso.sha256
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
