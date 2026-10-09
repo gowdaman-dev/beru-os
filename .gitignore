@@ -4,3 +4,5 @@ __pycache__/
 *.pyc
 
 .claude/
+.codegraph/
+.pi/
